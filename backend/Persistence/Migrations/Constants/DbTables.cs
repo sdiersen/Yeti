@@ -1,4 +1,4 @@
-namespace Persistance.Migrations.DbConstants
+namespace backend.Persistence.Migrations.Constants
 {
     public static class DbTableNames
     {

@@ -1,4 +1,4 @@
-namespace Domain.Identity
+namespace backend.Persistence.Models.Identity
 {
     public class UserData
     {
