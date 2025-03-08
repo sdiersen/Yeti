@@ -1,14 +1,9 @@
 using backend.Persistence.Models.Identity;
-using backend.Persistence.ModelValidations;
-using backend.Services.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 
 namespace backend.Controllers.Identity
 {
-    // First controller in this app. Probably need to make a base class for controllers in future
-    [ApiController]
-    [Route("api/[controller]")]
     public class UserDataController : AbstractBaseController<UserData>
     {
 

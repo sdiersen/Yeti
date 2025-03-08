@@ -1,1 +1,14 @@
 node_modules
+
+# Ignore all .dll files
+*.dll
+*.cache
+
+# development machine specific files
+appsettings.Development.json
+
+# build results
+[Dd]ebug/
+[Dd]ebugPublic/
+backend/obj/Debug/net9.0/backend.AssemblyInfo.cs
+backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
