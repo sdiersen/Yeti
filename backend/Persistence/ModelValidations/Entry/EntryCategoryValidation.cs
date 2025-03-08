@@ -32,32 +32,32 @@ namespace backend.Persistence.ModelValidations.Entry
         //since ReturnValue.Errors and ReturnValue.Messages are Lists of strings
         private List<string> ValidateName(string name)
         {
-            List<string> errors = new List<string>();
+            List<string> messages = new List<string>();
             if (string.IsNullOrWhiteSpace(name))
             {
-                errors.Add("Name is null or empty.");
+                messages.Add("Name is null or empty.");
             }
             if (name.Length > 50)
             {
-                errors.Add("Name cannot be greater than 50 characters.");
+                messages.Add("Name cannot be greater than 50 characters.");
             }
 
-            return errors;
+            return messages;
         }
 
         private List<string> ValidateDescription(string description)
         {
-            List<string> errors = new List<string>();
+            List<string> messages = new List<string>();
             if (string.IsNullOrWhiteSpace(description))
             {
-                errors.Add("Entry categories need a description.");
+                messages.Add("Entry categories need a description.");
             }
             if (description.Length > 500)
             {
-                errors.Add("Description cannot be greater than 500 characters.");
+                messages.Add("Description cannot be greater than 500 characters.");
             }
 
-            return errors;
+            return messages;
         }
     }
 }

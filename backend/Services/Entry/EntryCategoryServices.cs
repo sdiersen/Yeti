@@ -1,44 +1,47 @@
 using backend.Persistence.Migrations.Constants;
-using backend.Persistence.Models.Identity;
+using backend.Persistence.Models.Entry;
 using backend.Persistence.ModelValidations;
 using Dapper;
 using Library.ErrorHandling;
 using Microsoft.Data.SqlClient;
 using Persistence;
-namespace backend.Services.Identity
+
+namespace backend.Services.Entry
 {
-    public class UserDataServices : DbBaseLayer<UserDataServices, UserData>, IDbServicesInterface<UserData>
+    public class EntryCategoryServices : DbBaseLayer<EntryCategoryServices, EntryCategory>,
+                                                    IDbServicesInterface<EntryCategory>
     {
-        public UserDataServices(
-            ILogger<UserDataServices> logger,
+        public EntryCategoryServices(
+            ILogger<EntryCategoryServices> logger,
             IConfiguration configuration,
-            IModelValidation<UserData> modelValidation)
+            IModelValidation<EntryCategory> modelValidation)
             : base(logger, configuration, modelValidation)
         {
         }
 
+
         //****************************************************************************************************
         // GetRow
         //****************************************************************************************************
-        public ReturnValue<UserData> GetRow(UserData row)
+        public ReturnValue<EntryCategory> GetRow(EntryCategory row)
         {
             try
             {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
+                int id = FindIdByCategoryName(row.Name);
                 return GetRow(id);
             }
             catch (Exception e)
             {
-                return new ReturnValue<UserData>
+                return new ReturnValue<EntryCategory>
                 {
                     Success = false,
                     Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
+                    Messages = new List<string> { "Error finding id by category name" }
                 };
             }
         }
 
-        public async Task<ReturnValue<UserData>> GetRowAsync(UserData row)
+        public async Task<ReturnValue<EntryCategory>> GetRowAsync(EntryCategory row)
         {
             return await Task.Run(() => GetRow(row));
         }
@@ -46,7 +49,7 @@ namespace backend.Services.Identity
         //****************************************************************************************************
         // InsertRow
         //****************************************************************************************************
-        public ReturnValue InsertRow(UserData row)
+        public ReturnValue InsertRow(EntryCategory row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -57,38 +60,49 @@ namespace backend.Services.Identity
             //If validation passes, do insert row
             //create the query
             var sql = $@"
-                            INSERT INTO {DbTableNames.USER_DATA_TABLE} 
+                            INSERT INTO {DbTableNames.ENTRY_CATEGORY_TABLE} 
                             (
-                                {DbUserDataTable.USERNAME}, 
-                                {DbUserDataTable.EMAIL}, 
-                                {DbUserDataTable.PASSWORD}
+                                {DbEntryCategoryTable.NAME}, 
+                                {DbEntryCategoryTable.DESCRIPTION}
                             ) 
                             VALUES 
                             (
-                                @Username, 
-                                @Email, 
-                                @Password
-                            )
-                        ;";
+                                @Name, 
+                                @Description
+                            );
+                        ";
             //create the parameters
             var parameters = new DynamicParameters();
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            //execute the query
-            //do I want to catch errors here or pass them along? for now we're passing
-            return InsertRowBase(sql, parameters);
+            parameters.Add("Name", row.Name);
+            parameters.Add("Description", row.Description);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Execute(sql, parameters);
+                    return new ReturnValue { Success = true };
+                }
+                catch (Exception e)
+                {
+                    return new ReturnValue
+                    {
+                        Success = false,
+                        Errors = new List<string> { e.Message },
+                        Messages = new List<string> { "Error inserting row" }
+                    };
+                }
+            }
         }
 
-        public async Task<ReturnValue> InsertRowAsync(UserData row)
+        public Task<ReturnValue> InsertRowAsync(EntryCategory row)
         {
-            return await Task.Run(() => InsertRow(row));
+            return Task.Run(() => InsertRow(row));
         }
 
         //****************************************************************************************************
         // UpdateRow
         //****************************************************************************************************
-        public ReturnValue UpdateRow(int id, UserData row)
+        public ReturnValue UpdateRow(int id, EntryCategory row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -96,38 +110,30 @@ namespace backend.Services.Identity
             {
                 return returnValue;
             }
-            //If validation passes, do update row
 
-            //create the query  
+            //If validation passes, do update row
+            //create the query
             var sql = $@"
-                            UPDATE {DbTableNames.USER_DATA_TABLE} 
+                            UPDATE {DbTableNames.ENTRY_CATEGORY_TABLE} 
                             SET 
-                                {DbUserDataTable.USERNAME} = @Username, 
-                                {DbUserDataTable.EMAIL} = @Email, 
-                                {DbUserDataTable.PASSWORD} = @Password 
-                            WHERE {DbUserDataTable.ID} = @Id;
+                                {DbEntryCategoryTable.NAME} = @Name, 
+                                {DbEntryCategoryTable.DESCRIPTION} = @Description
+                            WHERE {DbEntryCategoryTable.ID} = @Id
+                            ;
                         ";
             //create the parameters
             var parameters = new DynamicParameters();
-            parameters.Add("@Id", id);
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            //execute the query
-            //do I want to catch errors here or pass them along? for now we're passing
+            parameters.Add("Id", id);
+            parameters.Add("Name", row.Name);
+            parameters.Add("Description", row.Description);
             return UpdateRowBase(sql, parameters);
         }
 
-        public async Task<ReturnValue> UpdateRowAsync(int id, UserData row)
-        {
-            return await Task.Run(() => UpdateRow(id, row));
-        }
-
-        public ReturnValue UpdateRow(UserData row)
+        public ReturnValue UpdateRow(EntryCategory row)
         {
             try
             {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
+                int id = FindIdByCategoryName(row.Name);
                 return UpdateRow(id, row);
             }
             catch (Exception e)
@@ -136,26 +142,29 @@ namespace backend.Services.Identity
                 {
                     Success = false,
                     Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
+                    Messages = new List<string> { "Error finding id by category name" }
                 };
             }
-
-
         }
 
-        public async Task<ReturnValue> UpdateRowAsync(UserData row)
+        public Task<ReturnValue> UpdateRowAsync(int id, EntryCategory row)
         {
-            return await Task.Run(() => UpdateRow(row));
+            return Task.Run(() => UpdateRow(id, row));
+        }
+
+        public Task<ReturnValue> UpdateRowAsync(EntryCategory row)
+        {
+            return Task.Run(() => UpdateRow(row));
         }
 
         //****************************************************************************************************
         // DeleteRow
         //****************************************************************************************************
-        public ReturnValue DeleteRow(UserData row)
+        public ReturnValue DeleteRow(EntryCategory row)
         {
             try
             {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
+                int id = FindIdByCategoryName(row.Name);
                 return DeleteRow(id);
             }
             catch (Exception e)
@@ -164,20 +173,21 @@ namespace backend.Services.Identity
                 {
                     Success = false,
                     Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
+                    Messages = new List<string> { "Error finding id by category name" }
                 };
             }
         }
 
-        public async Task<ReturnValue> DeleteRowAsync(UserData row)
+        public Task<ReturnValue> DeleteRowAsync(EntryCategory row)
         {
-            return await Task.Run(() => DeleteRow(row));
+            return Task.Run(() => DeleteRow(row));
         }
 
         //****************************************************************************************************
         // Private Helper Methods
         //****************************************************************************************************
-        private int FindIdByUsernameAndEmail(string username, string email)
+
+        private int FindIdByCategoryName(string categoryName)
         {
             int id = -1;
 
@@ -185,11 +195,13 @@ namespace backend.Services.Identity
             {
                 try
                 {
-                    var sql = "SELECT Id FROM UserData WHERE Username = @Username AND Email = @Email;";
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@Username", username);
-                    parameters.Add("@Email", email);
-                    id = connection.QueryFirstOrDefault<int>(sql, parameters);
+                    string sql = $@"
+                                    SELECT {DbEntryCategoryTable.ID} 
+                                    FROM {DbTableNames.ENTRY_CATEGORY_TABLE} 
+                                    WHERE {DbEntryCategoryTable.NAME} = @CategoryName
+                                    ;";
+
+                    id = connection.QueryFirstOrDefault<int>(sql, new { CategoryName = categoryName });
                     return id;
                 }
                 catch (Exception)
@@ -199,4 +211,3 @@ namespace backend.Services.Identity
             }
         }
     }
-}
