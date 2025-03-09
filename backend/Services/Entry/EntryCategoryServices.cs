@@ -43,7 +43,20 @@ namespace backend.Services.Entry
 
         public async Task<ReturnValue<EntryCategory>> GetRowAsync(EntryCategory row)
         {
-            return await Task.Run(() => GetRow(row));
+            try
+            {
+                int id = FindIdByCategoryName(row.Name);
+                return await GetRowAsync(id);
+            }
+            catch (Exception e)
+            {
+                return new ReturnValue<EntryCategory>
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                    Messages = new List<string> { "Error finding id by category name" }
+                };
+            }
         }
 
         //****************************************************************************************************
@@ -58,45 +71,71 @@ namespace backend.Services.Entry
                 return returnValue;
             }
             //If validation passes, do insert row
+            //set the created and modified dates
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
             //create the query
             var sql = $@"
                             INSERT INTO {DbTableNames.ENTRY_CATEGORY_TABLE} 
                             (
+                                {DbEntryCategoryTable.CREATED_ON},
+                                {DbEntryCategoryTable.MODIFIED_ON},
                                 {DbEntryCategoryTable.NAME}, 
                                 {DbEntryCategoryTable.DESCRIPTION}
                             ) 
                             VALUES 
                             (
+                                @CreatedOn,
+                                @ModifiedOn,
                                 @Name, 
                                 @Description
                             );
                         ";
             //create the parameters
             var parameters = new DynamicParameters();
+            parameters.Add("CreatedOn", row.CreatedOn);
+            parameters.Add("ModifiedOn", row.ModifiedOn);
             parameters.Add("Name", row.Name);
             parameters.Add("Description", row.Description);
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    connection.Execute(sql, parameters);
-                    return new ReturnValue { Success = true };
-                }
-                catch (Exception e)
-                {
-                    return new ReturnValue
-                    {
-                        Success = false,
-                        Errors = new List<string> { e.Message },
-                        Messages = new List<string> { "Error inserting row" }
-                    };
-                }
-            }
+            return InsertRowBase(sql, parameters);
         }
 
-        public Task<ReturnValue> InsertRowAsync(EntryCategory row)
+        public async Task<ReturnValue> InsertRowAsync(EntryCategory row)
         {
-            return Task.Run(() => InsertRow(row));
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            //If validation passes, do insert row
+            //set the created and modified dates
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            //create the query
+            var sql = $@"
+                            INSERT INTO {DbTableNames.ENTRY_CATEGORY_TABLE} 
+                            (
+                                {DbEntryCategoryTable.CREATED_ON},
+                                {DbEntryCategoryTable.MODIFIED_ON},
+                                {DbEntryCategoryTable.NAME}, 
+                                {DbEntryCategoryTable.DESCRIPTION}
+                            ) 
+                            VALUES 
+                            (
+                                @CreatedOn,
+                                @ModifiedOn,
+                                @Name, 
+                                @Description
+                            );
+                        ";
+            //create the parameters
+            var parameters = new DynamicParameters();
+            parameters.Add("CreatedOn", row.CreatedOn);
+            parameters.Add("ModifiedOn", row.ModifiedOn);
+            parameters.Add("Name", row.Name);
+            parameters.Add("Description", row.Description);
+            return await InsertRowBaseAsync(sql, parameters);
         }
 
         //****************************************************************************************************
@@ -112,10 +151,13 @@ namespace backend.Services.Entry
             }
 
             //If validation passes, do update row
+            //set the modified date
+            row.ModifiedOn = DateTime.Now;
             //create the query
             var sql = $@"
                             UPDATE {DbTableNames.ENTRY_CATEGORY_TABLE} 
                             SET 
+                                {DbEntryCategoryTable.MODIFIED_ON} = @ModifiedOn,
                                 {DbEntryCategoryTable.NAME} = @Name, 
                                 {DbEntryCategoryTable.DESCRIPTION} = @Description
                             WHERE {DbEntryCategoryTable.ID} = @Id
@@ -126,6 +168,7 @@ namespace backend.Services.Entry
             parameters.Add("Id", id);
             parameters.Add("Name", row.Name);
             parameters.Add("Description", row.Description);
+            parameters.Add("ModifiedOn", row.ModifiedOn);
             return UpdateRowBase(sql, parameters);
         }
 
@@ -147,14 +190,53 @@ namespace backend.Services.Entry
             }
         }
 
-        public Task<ReturnValue> UpdateRowAsync(int id, EntryCategory row)
+        public async Task<ReturnValue> UpdateRowAsync(int id, EntryCategory row)
         {
-            return Task.Run(() => UpdateRow(id, row));
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+
+            //If validation passes, do update row
+            //set the modified date
+            row.ModifiedOn = DateTime.Now;
+            //create the query
+            var sql = $@"
+                            UPDATE {DbTableNames.ENTRY_CATEGORY_TABLE} 
+                            SET 
+                                {DbEntryCategoryTable.MODIFIED_ON} = @ModifiedOn,
+                                {DbEntryCategoryTable.NAME} = @Name, 
+                                {DbEntryCategoryTable.DESCRIPTION} = @Description
+                            WHERE {DbEntryCategoryTable.ID} = @Id
+                            ;
+                        ";
+            //create the parameters
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id);
+            parameters.Add("Name", row.Name);
+            parameters.Add("Description", row.Description);
+            parameters.Add("ModifiedOn", row.ModifiedOn);
+            return await UpdateRowBaseAsync(sql, parameters);
         }
 
-        public Task<ReturnValue> UpdateRowAsync(EntryCategory row)
+        public async Task<ReturnValue> UpdateRowAsync(EntryCategory row)
         {
-            return Task.Run(() => UpdateRow(row));
+            try
+            {
+                int id = FindIdByCategoryName(row.Name);
+                return await UpdateRowAsync(id, row);
+            }
+            catch (Exception e)
+            {
+                return new ReturnValue
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                    Messages = new List<string> { "Error finding id by category name" }
+                };
+            }
         }
 
         //****************************************************************************************************
@@ -178,9 +260,22 @@ namespace backend.Services.Entry
             }
         }
 
-        public Task<ReturnValue> DeleteRowAsync(EntryCategory row)
+        public async Task<ReturnValue> DeleteRowAsync(EntryCategory row)
         {
-            return Task.Run(() => DeleteRow(row));
+            try
+            {
+                int id = FindIdByCategoryName(row.Name);
+                return await DeleteRowAsync(id);
+            }
+            catch (Exception e)
+            {
+                return new ReturnValue
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                    Messages = new List<string> { "Error finding id by category name" }
+                };
+            }
         }
 
         //****************************************************************************************************

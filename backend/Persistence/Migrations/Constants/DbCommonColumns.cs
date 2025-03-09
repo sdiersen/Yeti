@@ -1,6 +1,6 @@
 namespace backend.Persistence.Migrations.Constants
 {
-    public static class DbCommonColumns
+    public class DbCommonColumns
     {
         public const string ID = "Id";
         public const string CREATED_ON = "CreatedOn";

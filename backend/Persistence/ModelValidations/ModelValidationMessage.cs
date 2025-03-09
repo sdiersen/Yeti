@@ -1,3 +1,4 @@
+using backend.Persistence.Models;
 using Library.ErrorHandling;
 
 namespace backend.Persistence.ModelValidations
@@ -14,7 +15,7 @@ namespace backend.Persistence.ModelValidations
     /// must meet specific requirements. The lack of a description should not cause the model to be invalid.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IModelValidation<T> where T : class
+    public interface IModelValidation<T> where T : IBaseModel
     {
         ReturnValue ValidateModel(T model);
         Task<ReturnValue> ValidateModelAsync(T model);

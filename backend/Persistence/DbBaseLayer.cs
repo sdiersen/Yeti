@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration.Json;
 using backend.Persistence.ModelValidations;
 using Library.ErrorHandling;
+using backend.Persistence.Models;
+using backend.Services;
 
 namespace Persistence
 {
@@ -12,7 +14,7 @@ namespace Persistence
     /// </summary>
     /// <typeparam name="T1">The Subclass that uses this Superclass </typeparam>
     /// <typeparam name="T2">The Model class that is being accessed in the database.</typeparam>
-    public abstract class DbBaseLayer<T1, T2> where T2 : class
+    public abstract class DbBaseLayer<T1, T2> where T2 : IBaseModel
     {
         protected readonly string _connectionString;
         protected readonly IConfiguration _configuration;
@@ -23,7 +25,9 @@ namespace Persistence
         protected DateTime CreatedOn { get; set; }
         protected DateTime ModifiedOn { get; set; }
 
-        public DbBaseLayer(ILogger<T1> logger, IConfiguration configuration, IModelValidation<T2> modelValidation)
+        public DbBaseLayer(ILogger<T1> logger,
+                            IConfiguration configuration,
+                            IModelValidation<T2> modelValidation)
         {
             _logger = logger;
             _configuration = configuration;
@@ -43,53 +47,9 @@ namespace Persistence
             _connectionString = connectionString;
         }
 
-        public virtual ReturnValue DeleteRow(int id)
-        {
-            ReturnValue returnValue = new ReturnValue();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    string query = $"DELETE FROM {TableName} WHERE Id = @Id";
-                    int rowsAffected = connection.Execute(query, new { Id = id });
-                    returnValue.Success = true;
-                    var message = rowsAffected == 0 ? "Delete query returned successfully, but 0 rows were affected." :
-                                                        $"Delete query returned successfully. Number of rows affected: {rowsAffected}";
-                    returnValue.Messages.Add(message);
-                }
-                catch (Exception ex)
-                {
-                    returnValue.Success = false;
-                    returnValue.Errors.Add(ex.Message);
-                }
-            }
-            return returnValue;
-        }
-
-        public virtual async Task<ReturnValue> DeleteRowAsync(int id)
-        {
-            ReturnValue returnValue = new ReturnValue();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    await connection.OpenAsync();
-                    string query = $"DELETE FROM {TableName} WHERE Id = @Id";
-                    int rowsAffected = await connection.ExecuteAsync(query, new { Id = id });
-                    returnValue.Success = true;
-                    var message = rowsAffected == 0 ? "Delete query returned successfully, but 0 rows were affected." :
-                                                        $"Delete query returned successfully. Number of rows affected: {rowsAffected}";
-                    returnValue.Messages.Add(message);
-                }
-                catch (Exception ex)
-                {
-                    returnValue.Success = false;
-                    returnValue.Errors.Add(ex.Message);
-                }
-            }
-            return returnValue;
-        }
+        //******************************************************************************
+        // Get Row
+        //******************************************************************************
 
         public virtual ReturnValue<T2> GetRow(int id)
         {
@@ -151,12 +111,19 @@ namespace Persistence
             return returnValue;
         }
 
+        /// <summary>
+        /// Get the first numberOfRows from teh table
+        /// if numberOfRows is <= 0, return all rows
+        /// </summary>
+        /// <param name="numberOfRows"></param>
+        /// <returns>ReturnValue of type List of table type</returns>
         public virtual ReturnValue<List<T2>> GetFirstXRows(int numberOfRows)
         {
             ReturnValue<List<T2>> returnValue = new ReturnValue<List<T2>>();
             using (var connection = new SqlConnection(_connectionString))
             {
-                string query = $"SELECT TOP @rows * FROM {TableName}";
+                string query = numberOfRows >= 0 ? $"SELECT TOP @rows * FROM {TableName}" :
+                                                   $"SELECT * FROM {TableName}";
                 try
                 {
                     var rows = connection.Query<T2>(query, new { rows = numberOfRows });
@@ -179,9 +146,11 @@ namespace Persistence
             ReturnValue<List<T2>> returnValue = new ReturnValue<List<T2>>();
             using (var connection = new SqlConnection(_connectionString))
             {
-                string query = $"SELECT TOP @rows * FROM {TableName}";
+                string query = numberOfRows >= 0 ? $"SELECT TOP @rows * FROM {TableName}" :
+                                                   $"SELECT * FROM {TableName}";
                 try
                 {
+                    await connection.OpenAsync();
                     var rows = await connection.QueryAsync<T2>(query, new { rows = numberOfRows });
                     returnValue.Success = true;
                     returnValue.Data = rows.ToList();
@@ -195,6 +164,57 @@ namespace Persistence
                 }
                 return returnValue;
             }
+        }
+
+        //******************************************************************************
+        // Delete Row
+        //******************************************************************************
+        public virtual ReturnValue DeleteRow(int id)
+        {
+            ReturnValue returnValue = new ReturnValue();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = $"DELETE FROM {TableName} WHERE Id = @Id";
+                    int rowsAffected = connection.Execute(query, new { Id = id });
+                    returnValue.Success = true;
+                    var message = rowsAffected == 0 ? "Delete query returned successfully, but 0 rows were affected." :
+                                                        $"Delete query returned successfully. Number of rows affected: {rowsAffected}";
+                    returnValue.Messages.Add(message);
+                }
+                catch (Exception ex)
+                {
+                    returnValue.Success = false;
+                    returnValue.Errors.Add(ex.Message);
+                }
+            }
+            return returnValue;
+        }
+
+        public virtual async Task<ReturnValue> DeleteRowAsync(int id)
+        {
+            ReturnValue returnValue = new ReturnValue();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    await connection.OpenAsync();
+                    string query = $"DELETE FROM {TableName} WHERE Id = @Id";
+                    int rowsAffected = await connection.ExecuteAsync(query, new { Id = id });
+                    returnValue.Success = true;
+                    var message = rowsAffected == 0 ? "Delete query returned successfully, but 0 rows were affected." :
+                                                        $"Delete query returned successfully. Number of rows affected: {rowsAffected}";
+                    returnValue.Messages.Add(message);
+                }
+                catch (Exception ex)
+                {
+                    returnValue.Success = false;
+                    returnValue.Errors.Add(ex.Message);
+                }
+            }
+            return returnValue;
         }
 
         /*
@@ -232,6 +252,7 @@ namespace Persistence
             {
                 try
                 {
+                    await connection.OpenAsync();
                     int rowsAffected = await connection.ExecuteAsync(sql, parameters);
                     returnValue.Success = true;
                     var message = rowsAffected == 0 ? $"Insert row into {TableName} async returned successfully, but 0 rows were affected." :
@@ -275,6 +296,7 @@ namespace Persistence
             {
                 try
                 {
+                    await connection.OpenAsync();
                     int id = parameters.Get<int>("@Id");
                     int rowsAffected = await connection.ExecuteAsync(sql, parameters);
                     returnValue.Success = true;
@@ -285,6 +307,35 @@ namespace Persistence
                 catch (Exception ex)
                 {
                     returnValue.Errors.Add(ex.Message);
+                }
+            }
+            return returnValue;
+        }
+
+        protected ReturnValue ExecuteQuery(string sql,
+                                            DynamicParameters parameters,
+                                            string errorMessage = "",
+                                            string successMessage = "")
+        {
+            ReturnValue returnValue = new ReturnValue();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Execute(sql, parameters);
+                    returnValue.Success = true;
+                    if (successMessage != "")
+                    {
+                        returnValue.Messages.Add(successMessage);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    returnValue.Errors.Add(ex.Message);
+                    if (errorMessage != "")
+                    {
+                        returnValue.Messages.Add(errorMessage);
+                    }
                 }
             }
             return returnValue;
