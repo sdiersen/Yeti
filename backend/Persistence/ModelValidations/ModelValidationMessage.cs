@@ -1,5 +1,5 @@
 using backend.Persistence.Models;
-using Library.ErrorHandling;
+using ErrorHandling;
 
 namespace backend.Persistence.ModelValidations
 {

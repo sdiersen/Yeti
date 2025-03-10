@@ -1,11 +1,8 @@
 using Dapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration.Json;
 using backend.Persistence.ModelValidations;
-using Library.ErrorHandling;
 using backend.Persistence.Models;
-using backend.Services;
+using ErrorHandling;
 
 namespace Persistence
 {

@@ -1,6 +1,6 @@
 
 using System.Text.RegularExpressions;
-using Library.ErrorHandling;
+using ErrorHandling;
 using backend.Persistence.Models.Identity;
 
 namespace backend.Persistence.ModelValidations.Identity

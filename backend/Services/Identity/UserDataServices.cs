@@ -2,7 +2,7 @@ using backend.Persistence.Migrations.Constants;
 using backend.Persistence.Models.Identity;
 using backend.Persistence.ModelValidations;
 using Dapper;
-using Library.ErrorHandling;
+using ErrorHandling;
 using Microsoft.Data.SqlClient;
 using Persistence;
 namespace backend.Services.Identity

@@ -10,7 +10,26 @@ appsettings.Development.json
 # build results
 [Dd]ebug/
 [Dd]ebugPublic/
+obj/
 backend/obj/Debug/net9.0/backend.AssemblyInfo.cs
 backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
 backend/obj/Debug/net9.0/backend.AssemblyInfo.cs
 backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
+.vs/ProjectEvaluation/yeti.metadata.v9.bin
+.vs/ProjectEvaluation/yeti.projects.v9.bin
+.vs/ProjectEvaluation/yeti.strings.v9.bin
+.vs/Yeti/CopilotIndices/17.12.53.23981/CodeChunks.db
+.vs/Yeti/CopilotIndices/17.12.53.23981/SemanticSymbols.db
+.vs/Yeti/CopilotIndices/17.12.53.23981/SemanticSymbols.db-shm
+.vs/Yeti/CopilotIndices/17.12.53.23981/SemanticSymbols.db-wal
+.vs/Yeti/DesignTimeBuild/.dtbcache.v2
+.vs/Yeti/FileContentIndex/c481c065-c9b2-454b-a366-431fcc639584.vsidx
+.vs/Yeti/v17/.futdcache.v2
+.vs/Yeti/v17/.suo
+.vs/Yeti/v17/DocumentLayout.backup.json
+.vs/Yeti/v17/DocumentLayout.json
+backend/obj/project.nuget.cache
+backend/obj/Debug/net9.0/backend.AssemblyInfo.cs
+backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
+backend/obj/Debug/net9.0/backend.assets.cache
+backend/obj/Debug/net9.0/backend.csproj.AssemblyReference.cache

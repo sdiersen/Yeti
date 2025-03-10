@@ -1,6 +1,6 @@
 
 using backend.Persistence.Models.Entry;
-using Library.ErrorHandling;
+using ErrorHandling;
 
 namespace backend.Persistence.ModelValidations.Entry
 {

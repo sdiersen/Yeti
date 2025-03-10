@@ -1,4 +1,4 @@
-using Library.ErrorHandling;
+using ErrorHandling;
 
 namespace Persistence
 {
