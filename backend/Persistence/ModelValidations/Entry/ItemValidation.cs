@@ -4,9 +4,9 @@ using Library.ErrorHandling;
 
 namespace backend.Persistence.ModelValidations.Entry
 {
-    public class TransactionValidation : IModelValidation<Transaction>
+    public class ItemValidation : IModelValidation<Item>
     {
-        public ReturnValue ValidateModel(Transaction model)
+        public ReturnValue ValidateModel(Item model)
         {
             ReturnValue returnValue = new ReturnValue();
             List<string> messages = ValidateName(model.Name);
@@ -28,7 +28,7 @@ namespace backend.Persistence.ModelValidations.Entry
             return returnValue;
         }
 
-        public Task<ReturnValue> ValidateModelAsync(Transaction model)
+        public Task<ReturnValue> ValidateModelAsync(Item model)
         {
             return Task.Run(() => ValidateModel(model));
         }
@@ -71,3 +71,4 @@ namespace backend.Persistence.ModelValidations.Entry
             return messages;
         }
     }
+}

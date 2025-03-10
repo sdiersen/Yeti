@@ -1,6 +1,6 @@
 namespace backend.Persistence.Models.Entry
 {
-    public class Transaction : AbstractBaseModel
+    public class Item : AbstractBaseModel
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

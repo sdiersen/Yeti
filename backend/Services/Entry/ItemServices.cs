@@ -1,22 +1,20 @@
 
 using backend.Persistence.Migrations.Constants;
-using backend.Persistence.Models;
 using backend.Persistence.Models.Entry;
 using backend.Persistence.ModelValidations;
 using Dapper;
 using Library.ErrorHandling;
-using Microsoft.Data.SqlClient;
 using Persistence;
 
 namespace backend.Services.Entry
 {
-    public class TransactionServices : DbBaseLayer<TransactionServices, Transaction>,
-                                        IDbServicesInterface<Transaction>
+    public class ItemServices : DbBaseLayer<ItemServices, Item>,
+                                        IDbServicesInterface<Item>
     {
-        public TransactionServices(
-            ILogger<TransactionServices> logger,
+        public ItemServices(
+            ILogger<ItemServices> logger,
             IConfiguration configuration,
-            IModelValidation<Transaction> modelValidation)
+            IModelValidation<Item> modelValidation)
             : base(logger, configuration, modelValidation)
         {
         }
@@ -25,19 +23,19 @@ namespace backend.Services.Entry
         // GetRow
         //****************************************************************************************************
         /// <summary>
-        /// Get a specific transaction from the database. 
-        /// Transactions might have a name or a description, but they are not unique
+        /// Get a specific item from the database. 
+        /// Items might have a name or a description, but they are not unique
         /// This means getting by row must be done by id
         /// </summary>
         /// <param name="row"></param>
-        /// <returns>the Transaction is id = row.id</returns>
+        /// <returns>the item if id = row.id</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public ReturnValue<Transaction> GetRow(Transaction row)
+        public ReturnValue<Item> GetRow(Item row)
         {
             return GetRow(row.Id);
         }
 
-        public async Task<ReturnValue<Transaction>> GetRowAsync(Transaction row)
+        public async Task<ReturnValue<Item>> GetRowAsync(Item row)
         {
             return await GetRowAsync(row.Id);
         }
@@ -45,7 +43,7 @@ namespace backend.Services.Entry
         //****************************************************************************************************
         // InsertRow
         //****************************************************************************************************
-        public ReturnValue InsertRow(Transaction row)
+        public ReturnValue InsertRow(Item row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -61,13 +59,13 @@ namespace backend.Services.Entry
 
             //create the sql
             var sql = $@"
-                            INSERT INTO {DbTableNames.TRANSACTION_TABLE} 
+                            INSERT INTO {DbTableNames.ITEM_TABLE} 
                             (
-                                {DbTransactionTable.CREATED_ON},
-                                {DbTransactionTable.MODIFIED_ON},
-                                {DbTransactionTable.NAME},
-                                {DbTransactionTable.DESCRIPTION},
-                                {DbTransactionTable.AMOUNT}
+                                {DbItemTable.CREATED_ON},
+                                {DbItemTable.MODIFIED_ON},
+                                {DbItemTable.NAME},
+                                {DbItemTable.DESCRIPTION},
+                                {DbItemTable.AMOUNT}
                             )
                             VALUES
                             (
@@ -89,7 +87,7 @@ namespace backend.Services.Entry
             return InsertRowBase(sql, parameters);
         }
 
-        public async Task<ReturnValue> InsertRowAsync(Transaction row)
+        public async Task<ReturnValue> InsertRowAsync(Item row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -105,13 +103,13 @@ namespace backend.Services.Entry
 
             //create the sql
             var sql = $@"
-                            INSERT INTO {DbTableNames.TRANSACTION_TABLE} 
+                            INSERT INTO {DbTableNames.ITEM_TABLE} 
                             (
-                                {DbTransactionTable.CREATED_ON},
-                                {DbTransactionTable.MODIFIED_ON},
-                                {DbTransactionTable.NAME},
-                                {DbTransactionTable.DESCRIPTION},
-                                {DbTransactionTable.AMOUNT}
+                                {DbItemTable.CREATED_ON},
+                                {DbItemTable.MODIFIED_ON},
+                                {DbItemTable.NAME},
+                                {DbItemTable.DESCRIPTION},
+                                {DbItemTable.AMOUNT}
                             )
                             VALUES
                             (
@@ -136,7 +134,7 @@ namespace backend.Services.Entry
         //****************************************************************************************************
         // UpdateRow
         //****************************************************************************************************
-        public ReturnValue UpdateRow(int id, Transaction row)
+        public ReturnValue UpdateRow(int id, Item row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -151,14 +149,14 @@ namespace backend.Services.Entry
 
             //create the sql
             var sql = $@"
-                            UPDATE {DbTableNames.TRANSACTION_TABLE}
+                            UPDATE {DbTableNames.ITEM_TABLE}
                             SET
-                                {DbTransactionTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbTransactionTable.NAME} = @Name,
-                                {DbTransactionTable.DESCRIPTION} = @Description,
-                                {DbTransactionTable.AMOUNT} = @Amount
+                                {DbItemTable.MODIFIED_ON} = @ModifiedOn,
+                                {DbItemTable.NAME} = @Name,
+                                {DbItemTable.DESCRIPTION} = @Description,
+                                {DbItemTable.AMOUNT} = @Amount
                             WHERE
-                                {DbTransactionTable.ID} = @Id;
+                                {DbItemTable.ID} = @Id;
                         ";
 
             //create the parameters
@@ -174,12 +172,12 @@ namespace backend.Services.Entry
 
         //Update row without an id doens't make sense currently as the only
         //unique value in the row is the id.
-        public ReturnValue UpdateRow(Transaction row)
+        public ReturnValue UpdateRow(Item row)
         {
             return UpdateRow(row.Id, row);
         }
 
-        public async Task<ReturnValue> UpdateRowAsync(int id, Transaction row)
+        public async Task<ReturnValue> UpdateRowAsync(int id, Item row)
         {
             //Do validation
             var returnValue = _modelValidation.ValidateModel(row);
@@ -194,14 +192,14 @@ namespace backend.Services.Entry
 
             //create the sql
             var sql = $@"
-                            UPDATE {DbTableNames.TRANSACTION_TABLE}
+                            UPDATE {DbTableNames.ITEM_TABLE}
                             SET
-                                {DbTransactionTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbTransactionTable.NAME} = @Name,
-                                {DbTransactionTable.DESCRIPTION} = @Description,
-                                {DbTransactionTable.AMOUNT} = @Amount
+                                {DbItemTable.MODIFIED_ON} = @ModifiedOn,
+                                {DbItemTable.NAME} = @Name,
+                                {DbItemTable.DESCRIPTION} = @Description,
+                                {DbItemTable.AMOUNT} = @Amount
                             WHERE
-                                {DbTransactionTable.ID} = @Id;
+                                {DbItemTable.ID} = @Id;
                         ";
             //create the parameters
             var parameters = new DynamicParameters();
@@ -214,7 +212,7 @@ namespace backend.Services.Entry
             return await UpdateRowBaseAsync(sql, parameters);
         }
 
-        public async Task<ReturnValue> UpdateRowAsync(Transaction row)
+        public async Task<ReturnValue> UpdateRowAsync(Item row)
         {
             return await UpdateRowAsync(row.Id, row);
         }
@@ -224,12 +222,12 @@ namespace backend.Services.Entry
         //****************************************************************************************************
         //Delete row without an id doesn't make sense currently as the only
         //unique value in the row is the id.
-        public ReturnValue DeleteRow(Transaction row)
+        public ReturnValue DeleteRow(Item row)
         {
             return DeleteRow(row.Id);
         }
 
-        public async Task<ReturnValue> DeleteRowAsync(Transaction row)
+        public async Task<ReturnValue> DeleteRowAsync(Item row)
         {
             return await DeleteRowAsync(row.Id);
         }
