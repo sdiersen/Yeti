@@ -1,5 +1,5 @@
-using backend.Persistence.Models.Entry;
-using backend.Persistence.Models.Identity;
+using Persistence.Models.Entry;
+using Persistence.Models.Identity;
 using backend.Services.Entry;
 using backend.Services.Identity;
 using Persistence;

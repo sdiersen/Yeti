@@ -1,4 +1,4 @@
-using backend.Persistence;
+using Persistence;
 using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);

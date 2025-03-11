@@ -1,4 +1,4 @@
-using backend.Persistence.Models.Entry;
+using Persistence.Models.Entry;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 

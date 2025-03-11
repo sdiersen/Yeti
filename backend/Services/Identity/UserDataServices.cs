@@ -1,6 +1,6 @@
-using backend.Persistence.Migrations.Constants;
-using backend.Persistence.Models.Identity;
-using backend.Persistence.ModelValidations;
+using Persistence.Migrations.Constants;
+using Persistence.Models.Identity;
+using Persistence.ModelValidations;
 using Dapper;
 using ErrorHandling;
 using Microsoft.Data.SqlClient;
