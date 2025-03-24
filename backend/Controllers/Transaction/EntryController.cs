@@ -1,22 +1,22 @@
-using Persistence.Models.Entry;
+using Persistence.Models.Transaction;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 
-namespace backend.Controllers.Entry
+namespace backend.Controllers.Transaction
 {
-    public class EntryCategoryController : AbstractBaseController<EntryCategory>
+    public class EntryController : AbstractBaseController<Entry>
     {
 
-        public EntryCategoryController(IDbServicesInterface<EntryCategory> entryCategoryServices,
-                                        ILogger<EntryCategoryController> logger)
+        public EntryController(IDbServicesInterface<Entry> entryCategoryServices,
+                                        ILogger<EntryController> logger)
         : base(entryCategoryServices, logger)
         {
         }
 
-        [HttpPost("NewEntryCategory")]
-        public async Task<ActionResult> Create([FromBody] EntryCategory newEntryCategory)
+        [HttpPost("NewEntry")]
+        public async Task<ActionResult> Create([FromBody] Entry newEntry)
         {
-            var returnValue = await _dbService.InsertRowAsync(newEntryCategory);
+            var returnValue = await _dbService.InsertRowAsync(newEntry);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -24,8 +24,8 @@ namespace backend.Controllers.Entry
             return Ok(returnValue);
         }
 
-        [HttpPut("UpdateEntryCategory")]
-        public async Task<ActionResult> Update([FromBody] EntryCategory entryCategory)
+        [HttpPut("UpdateEntry")]
+        public async Task<ActionResult> Update([FromBody] Entry entryCategory)
         {
             var returnValue = await _dbService.UpdateRowAsync(entryCategory);
             if (!returnValue.Success)
@@ -35,8 +35,8 @@ namespace backend.Controllers.Entry
             return Ok(returnValue);
         }
 
-        [HttpDelete("DeleteEntryCategory")]
-        public async Task<ActionResult> Delete([FromBody] EntryCategory entryCategory)
+        [HttpDelete("DeleteEntry")]
+        public async Task<ActionResult> Delete([FromBody] Entry entryCategory)
         {
             var returnValue = await _dbService.DeleteRowAsync(entryCategory);
             if (!returnValue.Success)
@@ -46,8 +46,8 @@ namespace backend.Controllers.Entry
             return Ok(returnValue);
         }
 
-        [HttpGet("GetEntryCategory")]
-        public async Task<ActionResult> Get([FromBody] EntryCategory entryCategory)
+        [HttpGet("GetEntry")]
+        public async Task<ActionResult> Get([FromBody] Entry entryCategory)
         {
             var returnValue = await _dbService.GetRowAsync(entryCategory);
             if (!returnValue.Success)
@@ -56,10 +56,5 @@ namespace backend.Controllers.Entry
             }
             return Ok(returnValue);
         }
-
-
-
-
-
     }
 }

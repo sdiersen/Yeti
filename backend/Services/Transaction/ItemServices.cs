@@ -1,12 +1,12 @@
 
 using Persistence.Migrations.Constants;
-using Persistence.Models.Entry;
+using Persistence.Models.Transaction;
 using Persistence.ModelValidations;
 using Dapper;
 using ErrorHandling;
 using Persistence;
 
-namespace backend.Services.Entry
+namespace backend.Services.Transaction
 {
     public class ItemServices : DbBaseLayer<ItemServices, Item>,
                                         IDbServicesInterface<Item>
@@ -57,34 +57,7 @@ namespace backend.Services.Entry
             row.CreatedOn = DateTime.Now;
             row.ModifiedOn = DateTime.Now;
 
-            //create the sql
-            var sql = $@"
-                            INSERT INTO {DbTableNames.ITEM_TABLE} 
-                            (
-                                {DbItemTable.CREATED_ON},
-                                {DbItemTable.MODIFIED_ON},
-                                {DbItemTable.NAME},
-                                {DbItemTable.DESCRIPTION},
-                                {DbItemTable.AMOUNT}
-                            )
-                            VALUES
-                            (
-                                @CreatedOn,
-                                @ModifiedOn,
-                                @Name,
-                                @Description,
-                                @Amount
-                            );
-                        ";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("CreatedOn", row.CreatedOn);
-            parameters.Add("ModifiedOn", row.ModifiedOn);
-            parameters.Add("Name", row.Name);
-            parameters.Add("Description", row.Description);
-            parameters.Add("Amount", row.Amount);
-            //run the query
-            return InsertRowBase(sql, parameters);
+            return InsertRowBase(_InsertRowSQL, FullItemParamsNoId(row));
         }
 
         public async Task<ReturnValue> InsertRowAsync(Item row)
@@ -101,34 +74,7 @@ namespace backend.Services.Entry
             row.CreatedOn = DateTime.Now;
             row.ModifiedOn = DateTime.Now;
 
-            //create the sql
-            var sql = $@"
-                            INSERT INTO {DbTableNames.ITEM_TABLE} 
-                            (
-                                {DbItemTable.CREATED_ON},
-                                {DbItemTable.MODIFIED_ON},
-                                {DbItemTable.NAME},
-                                {DbItemTable.DESCRIPTION},
-                                {DbItemTable.AMOUNT}
-                            )
-                            VALUES
-                            (
-                                @CreatedOn,
-                                @ModifiedOn,
-                                @Name,
-                                @Description,
-                                @Amount
-                            );
-                        ";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("CreatedOn", row.CreatedOn);
-            parameters.Add("ModifiedOn", row.ModifiedOn);
-            parameters.Add("Name", row.Name);
-            parameters.Add("Description", row.Description);
-            parameters.Add("Amount", row.Amount);
-            //run the query
-            return await InsertRowBaseAsync(sql, parameters);
+            return await InsertRowBaseAsync(_InsertRowSQL, FullItemParamsNoId(row));
         }
 
         //****************************************************************************************************
@@ -147,27 +93,8 @@ namespace backend.Services.Entry
             //set the modified date
             row.ModifiedOn = DateTime.Now;
 
-            //create the sql
-            var sql = $@"
-                            UPDATE {DbTableNames.ITEM_TABLE}
-                            SET
-                                {DbItemTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbItemTable.NAME} = @Name,
-                                {DbItemTable.DESCRIPTION} = @Description,
-                                {DbItemTable.AMOUNT} = @Amount
-                            WHERE
-                                {DbItemTable.ID} = @Id;
-                        ";
-
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("ModifiedOn", row.ModifiedOn);
-            parameters.Add("Name", row.Name);
-            parameters.Add("Description", row.Description);
-            parameters.Add("Amount", row.Amount);
-
             //run the query
-            return UpdateRowBase(sql, parameters);
+            return UpdateRowBase(_UpdateRowSQL, FullItemParamsNoId(row));
         }
 
         //Update row without an id doens't make sense currently as the only
@@ -190,26 +117,7 @@ namespace backend.Services.Entry
             //set the modified date
             row.ModifiedOn = DateTime.Now;
 
-            //create the sql
-            var sql = $@"
-                            UPDATE {DbTableNames.ITEM_TABLE}
-                            SET
-                                {DbItemTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbItemTable.NAME} = @Name,
-                                {DbItemTable.DESCRIPTION} = @Description,
-                                {DbItemTable.AMOUNT} = @Amount
-                            WHERE
-                                {DbItemTable.ID} = @Id;
-                        ";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("ModifiedOn", row.ModifiedOn);
-            parameters.Add("Name", row.Name);
-            parameters.Add("Description", row.Description);
-            parameters.Add("Amount", row.Amount);
-            parameters.Add("Id", id);
-            //run the query
-            return await UpdateRowBaseAsync(sql, parameters);
+            return await UpdateRowBaseAsync(_UpdateRowSQL, FullItemParamsNoId(row));
         }
 
         public async Task<ReturnValue> UpdateRowAsync(Item row)
@@ -236,5 +144,64 @@ namespace backend.Services.Entry
         // Private Helper Methods
         //****************************************************************************************************
 
+
+        //****************************************************************************************************
+        // Private string constant sql queries
+        //****************************************************************************************************
+        private const string _InsertRowSQL = $@"
+                            INSERT INTO {DbTableNames.ITEM_TABLE} 
+                            (
+                                {DbItemTable.CREATED_ON},
+                                {DbItemTable.MODIFIED_ON},
+                                {DbItemTable.NAME},
+                                {DbItemTable.NOTE},
+                                {DbItemTable.BUDGET_AMOUNT},
+                                {DbItemTable.CURRENT_AMOUNT},
+                                {DbItemTable.CATEGORY_ID},
+                                {DbItemTable.IS_EXPENSE}
+
+                            )
+                            VALUES
+                            (
+                                @CreatedOn,
+                                @ModifiedOn,
+                                @Name,
+                                @Note,
+                                @BudgetAmount,
+                                @CurrentAmount,
+                                @CategoryId,
+                                @IsExpense
+                            );
+                        ";
+        private const string _UpdateRowSQL = $@"
+                            UPDATE {DbTableNames.ITEM_TABLE}
+                            SET
+                                {DbItemTable.MODIFIED_ON} = @ModifiedOn,
+                                {DbItemTable.NAME} = @Name,
+                                {DbItemTable.NOTE} = @Note,
+                                {DbItemTable.BUDGET_AMOUNT} = @BudgetAmount,
+                                {DbItemTable.CURRENT_AMOUNT} = @CurrentAmount,
+                                {DbItemTable.CATEGORY_ID} = @CategoryId,
+                                {DbItemTable.IS_EXPENSE} = @IsExpense
+                            WHERE
+                                {DbItemTable.ID} = @Id;
+                        ";
+
+        //****************************************************************************************************
+        // Private DynamicParameters Helper Methods
+        //****************************************************************************************************
+        private DynamicParameters FullItemParamsNoId(Item row)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("CreatedOn", row.CreatedOn);
+            parameters.Add("ModifiedOn", row.ModifiedOn);
+            parameters.Add("Name", row.Name);
+            parameters.Add("Note", row.Note);
+            parameters.Add("BudgetAmount", row.BudgetAmount);
+            parameters.Add("CurrentAmount", row.CurrentAmount);
+            parameters.Add("CategoryId", row.CategoryId);
+            parameters.Add("IsExpense", row.IsExpense);
+            return parameters;
+        }
     }
 }
