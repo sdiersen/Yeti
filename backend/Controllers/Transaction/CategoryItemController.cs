@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
-using Persistence.Migrations.Entry;
+using Persistence.Models.Transaction;
 
 namespace backend.Controllers.Transaction
 {

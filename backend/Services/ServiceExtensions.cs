@@ -10,7 +10,9 @@ namespace backend.Services
     {
         public static void CustomDbServices(this IServiceCollection services)
         {
-            //Entry Services
+            //Transaction Services
+            services.AddScoped<IDbServicesInterface<Category>, CategoryServices>();
+            services.AddScoped<IDbServicesInterface<CategoryItem>, CategoryItemServices>();
             services.AddScoped<IDbServicesInterface<Entry>, EntryServices>();
             services.AddScoped<IDbServicesInterface<Item>, ItemServices>();
 

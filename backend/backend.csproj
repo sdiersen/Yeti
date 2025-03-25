@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Library\**" />
+    <Content Remove="Library\**" />
+    <EmbeddedResource Remove="Library\**" />
+    <None Remove="Library\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="FlyingFury.Libraries.ErrorHandling" Version="0.0.1" />
-    <PackageReference Include="FlyingFury.Yeti.Persistence" Version="0.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
@@ -18,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Library\" />
+    <ProjectReference Include="..\..\Libraries\Persistence\Persistence.csproj" />
   </ItemGroup>
 
 </Project>
