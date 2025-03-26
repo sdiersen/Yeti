@@ -12,9 +12,9 @@ namespace backend.Services
         {
             //Transaction Services
             services.AddScoped<IDbServicesInterface<Category>, CategoryServices>();
-            services.AddScoped<IDbServicesInterface<CategoryItem>, CategoryItemServices>();
             services.AddScoped<IDbServicesInterface<Entry>, EntryServices>();
             services.AddScoped<IDbServicesInterface<Item>, ItemServices>();
+            services.AddScoped<IDbServicesInterface<CategoryItem>, CategoryItemServices>();
 
             //Identity Services
             services.AddScoped<IDbServicesInterface<UserData>, UserDataServices>();

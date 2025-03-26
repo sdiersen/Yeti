@@ -67,5 +67,7 @@ app.UseRouting();
 
 app.MapControllers();
 
+app.Run();
+
 Console.WriteLine("Press any key to exit...");
 Console.ReadLine();
