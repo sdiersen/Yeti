@@ -25,7 +25,9 @@ builder.Services.AddLogging(config =>
     config.AddDebug();
 });
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var app = builder.Build();
