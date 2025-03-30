@@ -12,7 +12,7 @@ namespace backend.Controllers.Identity
         {
         }
 
-        [HttpPost("NewAccount")]
+        [HttpPost("NewUserData")]
         public async Task<ActionResult> Create([FromBody] UserData newUser)
         {
             var returnValue = await _dbService.InsertRowAsync(newUser);
@@ -23,7 +23,7 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-        [HttpPut("UpdateAccount")]
+        [HttpPut("UpdateUserData")]
         public async Task<ActionResult> Update([FromBody] UserData user)
         {
             var returnValue = await _dbService.UpdateRowAsync(user);
@@ -34,7 +34,7 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-        [HttpDelete("DeleteAccount")]
+        [HttpDelete("DeleteUserData")]
         public async Task<ActionResult> Delete([FromBody] UserData user)
         {
             var returnValue = await _dbService.DeleteRowAsync(user);
@@ -45,7 +45,7 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-        [HttpGet("GetAccount")]
+        [HttpGet("GetAUserData")]
         public async Task<ActionResult> Get([FromBody] UserData user)
         {
             var returnValue = await _dbService.GetRowAsync(user);
@@ -56,8 +56,15 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-
-
-
+        [HttpGet("GetUserDataById/{id}")]
+        public async Task<ActionResult> GetById(int id)
+        {
+            var returnValue = await _dbService.GetRowAsync(id);
+            if (!returnValue.Success)
+            {
+                return BadRequest(returnValue);
+            }
+            return Ok(returnValue);
+        }
     }
 }

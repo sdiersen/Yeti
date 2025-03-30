@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@sequelize/mssql": "^7.0.0-alpha.45"
-  }
-}

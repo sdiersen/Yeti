@@ -1,14 +1,13 @@
-// filepath: src/App.tsx
-import React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import ExampleComponent from "./components/ExampleComponent";
-import theme from "./styles/theme";
+import { FC } from "react";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import AppRoutes from "./AppRoutes";
 
-const App: React.FC = () => {
+const App: FC = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <ExampleComponent />
-    </ThemeProvider>
+    <Provider store={store}>
+      <AppRoutes />
+    </Provider>
   );
 };
 

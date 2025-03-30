@@ -15,50 +15,47 @@ namespace backend.Services.Identity
             IModelValidation<UserData> modelValidation)
             : base(logger, configuration, modelValidation)
         {
+            TableName = DbTableNames.USER_DATA_TABLE;
         }
 
         //****************************************************************************************************
         // GetRow
         //****************************************************************************************************
+        /// <summary>
+        /// Gets a UserData row from the database by id
+        /// currently this method uses the id in the row parameter to get the row
+        /// </summary>
+        /// <param name="row">UserData object to find</param>
+        /// <returns>
+        /// ReturnValue.Success = true if found ReturnValue.Data will have the UserData row
+        /// ReturnValue.Success = false if not found ReturnValue.Errors, ReturnValue.Messages will have the errors/messages respectively
+        /// </returns>
         public ReturnValue<UserData> GetRow(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return GetRow(id);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue<UserData>
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
+            return GetRow(row.Id);
         }
-
+        /// <summary>
+        /// Gets a UserData row from the database by id asynchronously
+        /// currently this method uses the id in the row parameter to get the row
+        /// </summary>
+        /// <param name="row">UserData object to find</param>
+        /// <returns>
+        /// ReturnValue.Success = true if found ReturnValue.Data will have the UserData row
+        /// ReturnValue.Success = false if not found ReturnValue.Errors, ReturnValue.Messages will have the errors/messages respectively
+        /// </returns>
         public async Task<ReturnValue<UserData>> GetRowAsync(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return await GetRowAsync(id);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue<UserData>
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
+            return await GetRowAsync(row.Id);
         }
 
         //****************************************************************************************************
         // InsertRow
         //****************************************************************************************************
+        /// <summary>
+        /// Inserts a row into the database
+        /// </summary>
+        /// <param name="row">The UserData object to insert</param>
+        /// <returns>ReturnValue</returns>
         public ReturnValue InsertRow(UserData row)
         {
             //Do validation
@@ -71,37 +68,14 @@ namespace backend.Services.Identity
             //set the created and modified dates
             row.CreatedOn = DateTime.Now;
             row.ModifiedOn = DateTime.Now;
-            //create the query
-            var sql = $@"
-                            INSERT INTO {DbTableNames.USER_DATA_TABLE} 
-                            (
-                                {DbUserDataTable.MODIFIED_ON},
-                                {DbUserDataTable.CREATED_ON},
-                                {DbUserDataTable.USERNAME}, 
-                                {DbUserDataTable.EMAIL}, 
-                                {DbUserDataTable.PASSWORD}
-                            ) 
-                            VALUES 
-                            (
-                                @ModifiedOn,
-                                @CreatedOn,
-                                @Username, 
-                                @Email, 
-                                @Password
-                            )
-                        ;";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            parameters.Add("@CreatedOn", row.CreatedOn);
-            parameters.Add("@ModifiedOn", row.ModifiedOn);
-            //execute the query
-            //do I want to catch errors here or pass them along? for now we're passing
-            return InsertRowBase(sql, parameters);
-        }
 
+            return InsertRowBase(_InsertUserDataSQL, FullUserDataParamsNoId(row));
+        }
+        /// <summary>
+        /// Inserts a UserData row into the database asynchronously
+        /// </summary>
+        /// <param name="row">The UserData object to insert</param>
+        /// <returns>ReturnValue</returns>
         public async Task<ReturnValue> InsertRowAsync(UserData row)
         {
             //Do validation
@@ -114,34 +88,8 @@ namespace backend.Services.Identity
             //set the created and modified dates
             row.CreatedOn = DateTime.Now;
             row.ModifiedOn = DateTime.Now;
-            //create the query
-            var sql = $@"
-                            INSERT INTO {DbTableNames.USER_DATA_TABLE} 
-                            (
-                                {DbUserDataTable.MODIFIED_ON},
-                                {DbUserDataTable.CREATED_ON},
-                                {DbUserDataTable.USERNAME}, 
-                                {DbUserDataTable.EMAIL}, 
-                                {DbUserDataTable.PASSWORD}
-                            ) 
-                            VALUES 
-                            (
-                                @ModifiedOn,
-                                @CreatedOn,
-                                @Username, 
-                                @Email, 
-                                @Password
-                            )
-                        ;";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            parameters.Add("@CreatedOn", row.CreatedOn);
-            parameters.Add("@ModifiedOn", row.ModifiedOn);
-            //execute the query
-            return await InsertRowBaseAsync(sql, parameters);
+
+            return await InsertRowBaseAsync(_InsertUserDataSQL, FullUserDataParamsNoId(row));
         }
 
         //****************************************************************************************************
@@ -158,26 +106,9 @@ namespace backend.Services.Identity
             //If validation passes, do update row
             //set the modified date
             row.ModifiedOn = DateTime.Now;
-            //create the query  
-            var sql = $@"
-                            UPDATE {DbTableNames.USER_DATA_TABLE} 
-                            SET 
-                                {DbUserDataTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbUserDataTable.USERNAME} = @Username, 
-                                {DbUserDataTable.EMAIL} = @Email, 
-                                {DbUserDataTable.PASSWORD} = @Password 
-                            WHERE {DbUserDataTable.ID} = @Id;
-                        ";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id", id);
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            parameters.Add("@ModifiedOn", row.ModifiedOn);
-            //execute the query
+
             //do I want to catch errors here or pass them along? for now we're passing
-            return UpdateRowBase(sql, parameters);
+            return UpdateRowBase(_UpdateUserDataSQL, FullUserDataParams(row));
         }
 
         public async Task<ReturnValue> UpdateRowAsync(int id, UserData row)
@@ -191,63 +122,18 @@ namespace backend.Services.Identity
             //If validation passes, do update row
             //set the modified date
             row.ModifiedOn = DateTime.Now;
-            //create the query
-            var sql = $@"
-                            UPDATE {DbTableNames.USER_DATA_TABLE} 
-                            SET 
-                                {DbUserDataTable.MODIFIED_ON} = @ModifiedOn,
-                                {DbUserDataTable.USERNAME} = @Username, 
-                                {DbUserDataTable.EMAIL} = @Email, 
-                                {DbUserDataTable.PASSWORD} = @Password 
-                            WHERE {DbUserDataTable.ID} = @Id;
-                        ";
-            //create the parameters
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id", id);
-            parameters.Add("@Username", row.Username);
-            parameters.Add("@Email", row.Email);
-            parameters.Add("@Password", row.Password);
-            parameters.Add("@ModifiedOn", row.ModifiedOn);
-            //execute the query
-            return await UpdateRowBaseAsync(sql, parameters);
+
+            return await UpdateRowBaseAsync(_UpdateUserDataSQL, FullUserDataParams(row));
         }
 
         public ReturnValue UpdateRow(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return UpdateRow(id, row);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
-
-
+            return UpdateRow(row.Id, row);
         }
 
         public async Task<ReturnValue> UpdateRowAsync(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return await UpdateRowAsync(id, row);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
+            return await UpdateRowAsync(row.Id, row);
         }
 
         //****************************************************************************************************
@@ -255,63 +141,74 @@ namespace backend.Services.Identity
         //****************************************************************************************************
         public ReturnValue DeleteRow(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return DeleteRow(id);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
+            return DeleteRow(row.Id);
         }
 
         public async Task<ReturnValue> DeleteRowAsync(UserData row)
         {
-            try
-            {
-                int id = FindIdByUsernameAndEmail(row.Username, row.Email);
-                return await DeleteRowAsync(id);
-            }
-            catch (Exception e)
-            {
-                return new ReturnValue
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                    Messages = new List<string> { "Error finding id by username and email" }
-                };
-            }
+            return await DeleteRowAsync(row.Id);
+        }
+
+
+        //****************************************************************************************************
+        // Private string constant sql queries
+        //****************************************************************************************************
+        private const string _InsertUserDataSQL = $@"
+                            INSERT INTO {DbTableNames.USER_DATA_TABLE} 
+                            (
+                                {DbUserDataTable.FIRST_NAME}, 
+                                {DbUserDataTable.LAST_NAME}, 
+                                {DbUserDataTable.DATE_OF_BIRTH},
+                                {DbCommonColumns.MODIFIED_ON},
+                                {DbCommonColumns.CREATED_ON}
+                            ) 
+                            VALUES 
+                            (
+                                @FirstName, 
+                                @LastMame, 
+                                @DateOfBirth,
+                                @ModifiedOn,
+                                @CreatedOn
+                            )
+                        ;"
+            ;
+
+        private string _UpdateUserDataSQL = $@"
+                            UPDATE {DbTableNames.USER_DATA_TABLE} 
+                            SET                                 
+                                {DbUserDataTable.FIRST_NAME} = @FirstName, 
+                                {DbUserDataTable.LAST_NAME} = @LastName,
+                                {DbUserDataTable.DATE_OF_BIRTH} = @DateOfBirth, 
+                                {DbCommonColumns.CREATED_ON} = @CreatedOn,
+                                {DbCommonColumns.MODIFIED_ON} = @ModifiedOn
+                            WHERE {DbCommonColumns.ID} = @Id;
+                        "
+            ;
+
+        //****************************************************************************************************
+        // Private DynamicParameters Helper Methods
+        //****************************************************************************************************
+        private DynamicParameters FullUserDataParamsNoId(UserData userData)
+        {
+            var dp = new DynamicParameters();
+            dp.Add("@FirstName", userData.FirstName);
+            dp.Add("@LastName", userData.LastName);
+            dp.Add("@DateOfBirth", userData.DateOfBirth);
+            dp.Add("@CreatedOn", userData.CreatedOn);
+            dp.Add("@ModifiedOn", userData.ModifiedOn);
+            return dp;
+        }
+
+        private DynamicParameters FullUserDataParams(UserData userData)
+        {
+            var dp = FullUserDataParamsNoId(userData);
+            dp.Add("@Id", userData.Id);
+            return dp;
         }
 
         //****************************************************************************************************
         // Private Helper Methods
         //****************************************************************************************************
-        private int FindIdByUsernameAndEmail(string username, string email)
-        {
-            int id = -1;
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    var sql = "SELECT Id FROM UserData WHERE Username = @Username AND Email = @Email;";
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@Username", username);
-                    parameters.Add("@Email", email);
-                    id = connection.QueryFirstOrDefault<int>(sql, parameters);
-                    return id;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-        }
     }
 }

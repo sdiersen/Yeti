@@ -14,3 +14,4 @@ appsettings.Development.json
 .vs/
 backend/obj/Debug/net9.0/backend.GeneratedMSBuildEditorConfig.editorconfig
 backend/obj/Debug/net9.0/backend.GlobalUsings.g.cs
+backend/appsettings.Development.json
