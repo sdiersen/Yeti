@@ -45,7 +45,7 @@ namespace backend.Controllers.Identity
         }
 
         [HttpGet("GetAccountRole")]
-        public async Task<ActionResult> Get([FromBody] AccountRole accountRole)
+        public async Task<ActionResult> Get([FromQuery] AccountRole accountRole)
         {
             var returnValue = await _dbService.GetRowAsync(accountRole);
             if (!returnValue.Success)

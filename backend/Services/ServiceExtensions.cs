@@ -18,6 +18,9 @@ namespace backend.Services
 
             //Identity Services
             services.AddScoped<IDbServicesInterface<UserData>, UserDataServices>();
+            services.AddScoped<IDbServicesInterface<Account>, AccountServices>();
+            services.AddScoped<IDbServicesInterface<Role>, RoleServices>();
+            services.AddScoped<IDbServicesInterface<AccountRole>, AccountRoleServices>();
         }
     }
 }

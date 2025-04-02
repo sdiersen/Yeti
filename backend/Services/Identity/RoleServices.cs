@@ -46,17 +46,17 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Role with name {row.RoleName} not found.");
+                        returnValue.AddMessage("database", $"Role with name {row.RoleName} not found.");
                     }
                 }
             }
             catch (SqlException ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }
@@ -84,17 +84,17 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Role with name {row.RoleName} not found.");
+                        returnValue.AddMessage("database", $"Role with name {row.RoleName} not found.");
                     }
                 }
             }
             catch (SqlException ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }
@@ -131,7 +131,7 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Failed to insert role {row.RoleName}.");
+                        returnValue.AddMessage("database", $"Failed to insert role {row.RoleName}.");
                     }
                 }
             }
@@ -139,16 +139,16 @@ namespace backend.Services.Identity
             {
                 if (ex.Number == 2627) // Unique constraint error
                 {
-                    returnValue.Messages.Add($"Role with name {row.RoleName} already exists.");
+                    returnValue.AddMessage("database", $"Role with name {row.RoleName} already exists.");
                 }
                 else
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }
@@ -182,7 +182,7 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Failed to insert role {row.RoleName}.");
+                        returnValue.AddMessage("database", $"Failed to insert role {row.RoleName}.");
                     }
                 }
             }
@@ -190,16 +190,16 @@ namespace backend.Services.Identity
             {
                 if (ex.Number == 2627) // Unique constraint error
                 {
-                    returnValue.Messages.Add($"Role with name {row.RoleName} already exists.");
+                    returnValue.AddMessage("database", $"Role with name {row.RoleName} already exists.");
                 }
                 else
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }
@@ -242,7 +242,7 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Failed to update role {row.RoleName}.");
+                        returnValue.AddMessage("database", $"Failed to update role {row.RoleName}.");
                     }
                 }
             }
@@ -250,16 +250,16 @@ namespace backend.Services.Identity
             {
                 if (ex.Number == 2627) // Unique constraint error
                 {
-                    returnValue.Messages.Add($"Role with name {row.RoleName} already exists.");
+                    returnValue.AddMessage("database", $"Role with name {row.RoleName} already exists.");
                 }
                 else
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }
@@ -299,7 +299,7 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add($"Failed to update role {row.RoleName}.");
+                        returnValue.AddMessage("database", $"Failed to update role {row.RoleName}.");
                     }
                 }
             }
@@ -307,16 +307,16 @@ namespace backend.Services.Identity
             {
                 if (ex.Number == 2627) // Unique constraint error
                 {
-                    returnValue.Messages.Add($"Role with name {row.RoleName} already exists.");
+                    returnValue.AddMessage("database", $"Role with name {row.RoleName} already exists.");
                 }
                 else
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                returnValue.Errors.Add(ex.Message);
+                returnValue.AddError("database", ex.Message);
             }
             return returnValue;
         }

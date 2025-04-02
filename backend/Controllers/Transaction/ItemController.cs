@@ -47,7 +47,7 @@ namespace backend.Controllers.Transaction
         }
 
         [HttpGet("GetItem")]
-        public async Task<ActionResult> Get([FromBody] Item item)
+        public async Task<ActionResult> Get([FromQuery] Item item)
         {
             var returnValue = await _dbService.GetRowAsync(item);
             if (!returnValue.Success)

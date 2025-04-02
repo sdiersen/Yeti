@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AccountType } from "../../../types/Identity/accountType";
+import {
+  AccountType,
+  defaultAccount,
+} from "../../../types/Identity/accountType";
 import axiosInstance, { handleAxiosError } from "../../../api/axios";
 
 interface AccountState {
@@ -43,24 +46,28 @@ const accountSlice = createSlice({
 export const { setAccount, setMessages, setErrors, setSuccess, setLoading } =
   accountSlice.actions;
 
-export const newAccount = (acct: AccountType) => async (dispatch: any) => {
-  dispatch(setLoading(true));
-  try {
-    const response = await axiosInstance.post("account/NewAccount", acct);
-    const { data, messages, errors, success } = response.data;
+export const newAccount =
+  (username: string, password: string) => async (dispatch: any) => {
+    dispatch(setLoading(true));
+    let acct: AccountType = defaultAccount;
+    acct.username = username;
+    acct.password = password;
+    try {
+      const response = await axiosInstance.post("account/NewAccount", acct);
+      const { data, messages, errors, success } = response.data;
 
-    if (success) {
-      dispatch(setAccount(data));
+      if (success) {
+        dispatch(setAccount(data));
+      }
+      dispatch(setMessages(messages || []));
+      dispatch(setErrors(errors || []));
+      dispatch(setSuccess(success));
+    } catch (error) {
+      handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
+    } finally {
+      dispatch(setLoading(false));
     }
-    dispatch(setMessages(messages || []));
-    dispatch(setErrors(errors || []));
-    dispatch(setSuccess(success));
-  } catch (error) {
-    handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+  };
 
 export const updateAccount = (acct: AccountType) => async (dispatch: any) => {
   dispatch(setLoading(true));

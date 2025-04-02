@@ -17,7 +17,7 @@ namespace backend.Controllers.Identity
             var returnValue = await _dbService.InsertRowAsync(newAccount);
             if (!returnValue.Success)
             {
-                return BadRequest(returnValue);
+                  return BadRequest(returnValue);
             }
             return Ok(returnValue);
         }
@@ -45,7 +45,7 @@ namespace backend.Controllers.Identity
         }
 
         [HttpGet("GetAccount")]
-        public async Task<ActionResult> Get([FromBody] Account account)
+        public async Task<ActionResult> Get([FromQuery] Account account)
         {
             var returnValue = await _dbService.GetRowAsync(account);
             if (!returnValue.Success)

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend", "backend\backend.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "..\Libraries\Persistence\Persistence.csproj", "{B3D9A5A4-D79D-4A97-AC6A-5441E2D6B440}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorHandling", "..\Libraries\ErrorHandling\ErrorHandling.csproj", "{F8A2DBEE-B966-4432-A189-3D67F32C0A99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{B3D9A5A4-D79D-4A97-AC6A-5441E2D6B440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3D9A5A4-D79D-4A97-AC6A-5441E2D6B440}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3D9A5A4-D79D-4A97-AC6A-5441E2D6B440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8A2DBEE-B966-4432-A189-3D67F32C0A99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8A2DBEE-B966-4432-A189-3D67F32C0A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8A2DBEE-B966-4432-A189-3D67F32C0A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8A2DBEE-B966-4432-A189-3D67F32C0A99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

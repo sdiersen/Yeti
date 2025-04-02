@@ -95,27 +95,27 @@ namespace backend.Services.Identity
                     if (result > 0)
                     {
                         returnValue.Success = true;
-                        returnValue.Messages.Add("Account created successfully.");
+                        returnValue.AddMessage("database","Account created successfully.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Failed to create account.");
+                        returnValue.AddMessage("database","Failed to create account.");
                     }
                 }
                 catch (SqlException ex)
                 {
                     if (ex.Number == 2627) // Unique constraint error number
                     {
-                        returnValue.Messages.Add("Username already exists.");
+                        returnValue.AddMessage("database", "Username already exists.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Database error: " + ex.Message);
+                        returnValue.AddMessage("database", "Database error: " + ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Messages.Add("Error: " + ex.Message);
+                    returnValue.AddMessage("database", "Error: " + ex.Message);
                 }
             }
             return returnValue;
@@ -160,27 +160,27 @@ namespace backend.Services.Identity
                     if (result > 0)
                     {
                         returnValue.Success = true;
-                        returnValue.Messages.Add("Account created successfully.");
+                        returnValue.AddMessage("account", "Account created successfully.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Failed to create account.");
+                        returnValue.AddMessage("account", "Failed to create account.");
                     }
                 }
                 catch (SqlException ex)
                 {
                     if (ex.Number == 2627) // Unique constraint error number
                     {
-                        returnValue.Messages.Add("Username already exists.");
+                        returnValue.AddMessage("database", "Username already exists.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Database error: " + ex.Message);
+                        returnValue.AddMessage("database", "Database error: " + ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Messages.Add("Error: " + ex.Message);
+                    returnValue.AddMessage("database", "Error: " + ex.Message);
                 }
             }
             return returnValue;
@@ -202,12 +202,14 @@ namespace backend.Services.Identity
         public ReturnValue UpdateRow(Account row)
         {
             //TODO: password needs to be encrypted, so here it would plaintext and need to be hashed to check against the database.
-            var returnValue = GetRowId(row.Username, row.Password);
-            if (!returnValue.Success)
+            var resultValue = GetRowId(row.Username, row.Password);
+            if (!resultValue.Success)
             {
-                return new ReturnValue { Success = false, Messages = { "Account not found." } };
+                var returnValue = new ReturnValue();
+                returnValue.AddMessage("database", "Account not found.");
+                return returnValue;
             }
-            return UpdateRow(returnValue.Data, row);
+            return UpdateRow(resultValue.Data, row);
         }
         /// <summary>
         /// Update an existing Account in the database asynchronously.
@@ -222,12 +224,14 @@ namespace backend.Services.Identity
         public async Task<ReturnValue> UpdateRowAsync(Account row)
         {
             //TODO: password needs to be encrypted, so here it would plaintext and need to be hashed to check against the database.
-            var returnValue = await GetRowIdAsync(row.Username, row.Password);
-            if (!returnValue.Success)
+            var resultValue = await GetRowIdAsync(row.Username, row.Password);
+            if (!resultValue.Success)
             {
-                return new ReturnValue { Success = false, Messages = { "Account not found." } };
+                var returnValue = new ReturnValue();
+                returnValue.AddMessage("database", "Account not found.");
+                return returnValue;
             }
-            return await UpdateRowAsync(returnValue.Data, row);
+            return await UpdateRowAsync(resultValue.Data, row);
         }
         /// <summary>
         /// Update an existing Account in the database.
@@ -265,27 +269,27 @@ namespace backend.Services.Identity
                     if (result > 0)
                     {
                         returnValue.Success = true;
-                        returnValue.Messages.Add("Account updated successfully.");
+                        returnValue.AddMessage("database", "Account updated successfully.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Failed to update account.");
+                        returnValue.AddMessage("database", "Failed to update account.");
                     }
                 }
                 catch (SqlException ex)
                 {
                     if (ex.Number == 2627) // Unique constraint error number
                     {
-                        returnValue.Messages.Add("Username already exists.");
+                        returnValue.AddMessage("database", "Username already exists.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Database error: " + ex.Message);
+                        returnValue.AddMessage("database", "Database error: " + ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Messages.Add("Error: " + ex.Message);
+                    returnValue.AddMessage("database", "Error: " + ex.Message);
                 }
             }
             return returnValue;
@@ -327,27 +331,27 @@ namespace backend.Services.Identity
                     if (result > 0)
                     {
                         returnValue.Success = true;
-                        returnValue.Messages.Add("Account updated successfully.");
+                        returnValue.AddMessage("database", "Account updated successfully.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Failed to update account.");
+                        returnValue.AddMessage("database", "Failed to update account.");
                     }
                 }
                 catch (SqlException ex)
                 {
                     if (ex.Number == 2627) // Unique constraint error number
                     {
-                        returnValue.Messages.Add("Username already exists.");
+                        returnValue.AddMessage("database", "Username already exists.");
                     }
                     else
                     {
-                        returnValue.Messages.Add("Database error: " + ex.Message);
+                        returnValue.AddMessage("database", "Database error: " + ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Messages.Add("Error: " + ex.Message);
+                    returnValue.AddMessage("database", "Error: " + ex.Message);
                 }
             }
             return returnValue;
@@ -368,7 +372,9 @@ namespace backend.Services.Identity
             var returnValue = GetRowId(row.Username, row.Password);
             if (!returnValue.Success)
             {
-                return new ReturnValue { Success = false, Messages = { "Account not found." } };
+                var rv = new ReturnValue();
+                rv.AddMessage("database", "Account not found.");
+                return rv;
             }
             return DeleteRow(returnValue.Data);
         }
@@ -381,12 +387,14 @@ namespace backend.Services.Identity
         public async Task<ReturnValue> DeleteRowAsync(Account row)
         {
             //TODO: password needs to be encrypted, so here it would plaintext and need to be hashed to check against the database.
-            var returnValue = await GetRowIdAsync(row.Username, row.Password);
-            if (!returnValue.Success)
+            var resultValue = await GetRowIdAsync(row.Username, row.Password);
+            if (!resultValue.Success)
             {
-                return new ReturnValue { Success = false, Messages = { "Account not found." } };
+                var returnValue = new ReturnValue();
+                returnValue.AddMessage("database", "Account not found.");
+                return returnValue;
             }
-            return await DeleteRowAsync(returnValue.Data);
+            return await DeleteRowAsync(resultValue.Data);
         }
 
 
@@ -409,12 +417,12 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add("Invalid username or password.");
+                        returnValue.AddMessage("database", "Invalid username or password.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             return returnValue;
@@ -438,12 +446,12 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add("Invalid username or password.");
+                        returnValue.AddMessage("database", "Invalid username or password.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             return returnValue;
@@ -466,12 +474,12 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add("Invalid username or password.");
+                        returnValue.AddMessage("database", "Invalid username or password.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             return returnValue;
@@ -494,12 +502,12 @@ namespace backend.Services.Identity
                     }
                     else
                     {
-                        returnValue.Messages.Add("Invalid username or password.");
+                        returnValue.AddMessage("database", "Invalid username or password.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    returnValue.Errors.Add(ex.Message);
+                    returnValue.AddError("database", ex.Message);
                 }
             }
             return returnValue;
@@ -518,6 +526,16 @@ namespace backend.Services.Identity
                                     {DbAccountTable.IS_LOCKED},
                                     {DbCommonColumns.CREATED_ON},
                                     {DbCommonColumns.MODIFIED_ON}
+                                )
+                                VALUES 
+                                (
+                                    @Username, 
+                                    @Password, 
+                                    @LastLogin,
+                                    @IsActive,
+                                    @IsLocked,
+                                    @CreatedOn,
+                                    @ModifiedOn
                                 )
                             ;"
             ;

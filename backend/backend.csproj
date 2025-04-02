@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="FlyingFury.Libraries.ErrorHandling" Version="0.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
@@ -24,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\ErrorHandling\ErrorHandling.csproj" />
     <ProjectReference Include="..\..\Libraries\Persistence\Persistence.csproj" />
   </ItemGroup>
 

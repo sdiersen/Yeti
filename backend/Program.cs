@@ -11,6 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 
 // Custom Services
 builder.Services.CustomModelValidationServices();
@@ -44,13 +54,23 @@ try
     if (!returnValue.Success)
     {
         app.Logger.LogError("Database startup failed");
-        foreach (var message in returnValue.Messages)
+        foreach (var kvp in returnValue.Messages)
         {
-            app.Logger.LogWarning(message);
+            string key = kvp.Key;
+            List<string> message = kvp.Value;
+            foreach (var msg in message)
+            {
+                app.Logger.LogError($"{key}: {msg}");
+            }
         }
-        foreach (var error in returnValue.Errors)
+        foreach (var kvp in returnValue.Errors)
         {
-            app.Logger.LogError(error);
+            string key = kvp.Key;
+            List<string> error = kvp.Value;
+            foreach (var err in error)
+            {
+                app.Logger.LogError($"{key}: {err}");
+            }
         }
         Environment.Exit(1); // Exit the application if database startup fails
     }
@@ -66,6 +86,8 @@ catch (Exception ex)
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors("AllowAllOrigins"); // Use the CORS policy
 
 app.MapControllers();
 

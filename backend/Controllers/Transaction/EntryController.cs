@@ -47,9 +47,20 @@ namespace backend.Controllers.Transaction
         }
 
         [HttpGet("GetEntry")]
-        public async Task<ActionResult> Get([FromBody] Entry entryCategory)
+        public async Task<ActionResult> Get([FromQuery] Entry entryCategory)
         {
             var returnValue = await _dbService.GetRowAsync(entryCategory);
+            if (!returnValue.Success)
+            {
+                return BadRequest(returnValue);
+            }
+            return Ok(returnValue);
+        }
+
+        [HttpGet("GetEntryById/{id}")]
+        public async Task<ActionResult> GetById(int id)
+        {
+            var returnValue = await _dbService.GetRowAsync(id);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);

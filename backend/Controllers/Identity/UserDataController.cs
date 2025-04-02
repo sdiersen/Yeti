@@ -45,8 +45,8 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-        [HttpGet("GetAUserData")]
-        public async Task<ActionResult> Get([FromBody] UserData user)
+        [HttpGet("GetUserData")]
+        public async Task<ActionResult> Get([FromQuery] UserData user)
         {
             var returnValue = await _dbService.GetRowAsync(user);
             if (!returnValue.Success)

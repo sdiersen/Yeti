@@ -7,3 +7,14 @@ export interface AccountType extends BaseModelType {
   isActive: boolean;
   isLocked: boolean;
 }
+
+export const defaultAccount: AccountType = {
+  id: 0,
+  username: "",
+  password: "",
+  lastLogin: new Date(0),
+  isActive: true,
+  isLocked: false,
+  createdOn: new Date(0),
+  modifiedOn: new Date(0),
+};

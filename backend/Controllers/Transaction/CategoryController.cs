@@ -48,7 +48,7 @@ namespace backend.Controllers.Transaction
         }
 
         [HttpGet("GetCategory")]
-        public async Task<ActionResult> Get([FromBody] Category entryCategory)
+        public async Task<ActionResult> Get([FromQuery] Category entryCategory)
         {
             var returnValue = await _dbService.GetRowAsync(entryCategory);
             if (!returnValue.Success)
