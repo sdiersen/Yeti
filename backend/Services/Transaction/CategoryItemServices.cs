@@ -1,5 +1,6 @@
 using Dapper;
 using ErrorHandling;
+using Microsoft.Data.SqlClient;
 using Persistence;
 using Persistence.Migrations.Constants;
 using Persistence.Models.Transaction;
@@ -7,8 +8,7 @@ using Persistence.ModelValidations;
 
 namespace backend.Services.Transaction
 {
-    public class CategoryItemServices : DbBaseLayer<CategoryItemServices, CategoryItem>,
-                                                    IDbServicesInterface<CategoryItem>
+    public class CategoryItemServices : DbBaseLayer<CategoryItemServices, CategoryItem>, IDbServicesInterface<CategoryItem>
     {
         public CategoryItemServices(
             ILogger<CategoryItemServices> logger,
@@ -25,10 +25,18 @@ namespace backend.Services.Transaction
         {
             return GetRow(row.Id);
         }
+        public ReturnValue<CategoryItem> GetRowAsTransaction(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return GetRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue<CategoryItem>> GetRowAsync(CategoryItem row)
         {
             return await GetRowAsync(row.Id);
+        }
+        public async Task<ReturnValue<CategoryItem>> GetRowAsTransactionAsync(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await GetRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -46,6 +54,17 @@ namespace backend.Services.Transaction
 
             return InsertRowBase(_InsertRowSQL, FullCategoryItemParamsNoId(row));
         }
+        public ReturnValue InsertRowAsTransaction(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return InsertRowBaseAsTransaction(_InsertRowSQL, FullCategoryItemParamsNoId(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> InsertRowAsync(CategoryItem row)
         {
@@ -58,6 +77,17 @@ namespace backend.Services.Transaction
             row.ModifiedOn = DateTime.Now;
 
             return await InsertRowBaseAsync(_InsertRowSQL, FullCategoryItemParamsNoId(row));
+        }
+        public async Task<ReturnValue> InsertRowAsTransactionAsync(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return await InsertRowBaseAsTransactionAsync(_InsertRowSQL, FullCategoryItemParamsNoId(row), connection, transaction);
         }
 
         //****************************************************************************************************
@@ -74,10 +104,24 @@ namespace backend.Services.Transaction
 
             return UpdateRowBase(_UpdateRowSQL, FullCategoryItemParams(row));
         }
+        public ReturnValue UpdateRowAsTransaction(int id, CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return UpdateRowBaseAsTransaction(_UpdateRowSQL, FullCategoryItemParams(row), connection, transaction);
+        }
 
         public ReturnValue UpdateRow(CategoryItem row)
         {
             return UpdateRow(row.Id, row);
+        }
+        public ReturnValue UpdateRowAsTransaction(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return UpdateRowAsTransaction(row.Id, row, connection, transaction);
         }
 
         public async Task<ReturnValue> UpdateRowAsync(int id, CategoryItem row)
@@ -91,10 +135,24 @@ namespace backend.Services.Transaction
 
             return await UpdateRowBaseAsync(_UpdateRowSQL, FullCategoryItemParams(row));
         }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(int id, CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return await UpdateRowBaseAsTransactionAsync(_UpdateRowSQL, FullCategoryItemParams(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> UpdateRowAsync(CategoryItem row)
         {
             return await UpdateRowAsync(row.Id, row);
+        }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await UpdateRowAsTransactionAsync(row.Id, row, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -104,10 +162,18 @@ namespace backend.Services.Transaction
         {
             return DeleteRow(row.Id);
         }
+        public ReturnValue DeleteRowAsTransaction(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return DeleteRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue> DeleteRowAsync(CategoryItem row)
         {
             return await DeleteRowAsync(row.Id);
+        }
+        public async Task<ReturnValue> DeleteRowAsTransactionAsync(CategoryItem row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await DeleteRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
         //****************************************************************************************************

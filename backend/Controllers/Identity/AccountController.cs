@@ -17,7 +17,18 @@ namespace backend.Controllers.Identity
             var returnValue = await _dbService.InsertRowAsync(newAccount);
             if (!returnValue.Success)
             {
-                  return BadRequest(returnValue);
+                return BadRequest(returnValue);
+            }
+            return Ok(returnValue);
+        }
+
+        [HttpPost("Login")]
+        public async Task<ActionResult> Login([FromBody] Account account)
+        {
+            var returnValue = await _dbService.GetRowAsync(account);
+            if (!returnValue.Success)
+            {
+                return BadRequest(returnValue);
             }
             return Ok(returnValue);
         }

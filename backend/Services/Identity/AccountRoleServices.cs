@@ -1,5 +1,6 @@
 using Dapper;
 using ErrorHandling;
+using Microsoft.Data.SqlClient;
 using Persistence;
 using Persistence.Migrations.Constants;
 using Persistence.Models.Identity;
@@ -25,10 +26,18 @@ namespace backend.Services.Identity
         {
             return GetRow(row.Id);
         }
+        public ReturnValue<AccountRole> GetRowAsTransaction(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return GetRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue<AccountRole>> GetRowAsync(AccountRole row)
         {
             return await GetRowAsync(row.Id);
+        }
+        public async Task<ReturnValue<AccountRole>> GetRowAsTransactionAsync(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await GetRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
 
@@ -47,6 +56,17 @@ namespace backend.Services.Identity
 
             return InsertRowBase(_InsertRowSQL, FullAccountRoleParamsNoId(row));
         }
+        public ReturnValue InsertRowAsTransaction(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValidation = _modelValidation.ValidateModel(row);
+            if (!returnValidation.Success)
+            {
+                return returnValidation;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return InsertRowBaseAsTransaction(_InsertRowSQL, FullAccountRoleParamsNoId(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> InsertRowAsync(AccountRole row)
         {
@@ -59,6 +79,17 @@ namespace backend.Services.Identity
             row.ModifiedOn = DateTime.Now;
 
             return await InsertRowBaseAsync(_InsertRowSQL, FullAccountRoleParamsNoId(row));
+        }
+        public async Task<ReturnValue> InsertRowAsTransactionAsync(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValidation = _modelValidation.ValidateModel(row);
+            if (!returnValidation.Success)
+            {
+                return returnValidation;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return await InsertRowBaseAsTransactionAsync(_InsertRowSQL, FullAccountRoleParamsNoId(row), connection, transaction);
         }
 
         //****************************************************************************
@@ -75,6 +106,16 @@ namespace backend.Services.Identity
 
             return UpdateRowBase(_UpdateRowSQL, FullAccountRoleParams(row));
         }
+        public ReturnValue UpdateRowAsTransaction(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValidation = _modelValidation.ValidateModel(row);
+            if (!returnValidation.Success)
+            {
+                return returnValidation;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return UpdateRowBaseAsTransaction(_UpdateRowSQL, FullAccountRoleParams(row), connection, transaction);
+        }
         public async Task<ReturnValue> UpdateRowAsync(AccountRole row)
         {
             var returnValidation = _modelValidation.ValidateModel(row);
@@ -86,16 +127,36 @@ namespace backend.Services.Identity
 
             return await UpdateRowBaseAsync(_UpdateRowSQL, FullAccountRoleParams(row));
         }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var returnValidation = _modelValidation.ValidateModel(row);
+            if (!returnValidation.Success)
+            {
+                return returnValidation;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return await UpdateRowBaseAsTransactionAsync(_UpdateRowSQL, FullAccountRoleParams(row), connection, transaction);
+        }
         public ReturnValue UpdateRow(int id, AccountRole row)
         {
             row.Id = id;
             return UpdateRow(row);
         }
-
+        //TODO - evaluate removiing Update methods that take an id and row, potentally require the id to be in the row
+        public ReturnValue UpdateRowAsTransaction(int id, AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            row.Id = id;
+            return UpdateRowAsTransaction(row, connection, transaction);
+        }
         public async Task<ReturnValue> UpdateRowAsync(int id, AccountRole row)
         {
             row.Id = id;
             return await UpdateRowAsync(row);
+        }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(int id, AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            row.Id = id;
+            return await UpdateRowAsTransactionAsync(row, connection, transaction);
         }
 
         //****************************************************************************
@@ -105,9 +166,17 @@ namespace backend.Services.Identity
         {
             return DeleteRow(row.Id);
         }
+        public ReturnValue DeleteRowAsTransaction(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return DeleteRowAsTransaction(row.Id, connection, transaction);
+        }
         public async Task<ReturnValue> DeleteRowAsync(AccountRole row)
         {
             return await DeleteRowAsync(row.Id);
+        }
+        public async Task<ReturnValue> DeleteRowAsTransactionAsync(AccountRole row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await DeleteRowAsTransactionAsync(row.Id, connection, transaction);
         }
         //****************************************************************************
         // Private string constant sql queries
@@ -143,7 +212,7 @@ namespace backend.Services.Identity
         //****************************************************************************
         // private DynamicParameters Helper methods
         //****************************************************************************
-        private DynamicParameters FullAccountRoleParamsNoId(AccountRole row)
+        private static DynamicParameters FullAccountRoleParamsNoId(AccountRole row)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@AccountId", row.AccountId);
@@ -153,7 +222,7 @@ namespace backend.Services.Identity
 
             return parameters;
         }
-        private DynamicParameters FullAccountRoleParams(AccountRole row)
+        private static DynamicParameters FullAccountRoleParams(AccountRole row)
         {
             var parameters = FullAccountRoleParamsNoId(row);
             parameters.Add("@Id", row.Id);

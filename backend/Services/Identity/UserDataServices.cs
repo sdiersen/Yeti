@@ -34,6 +34,10 @@ namespace backend.Services.Identity
         {
             return GetRow(row.Id);
         }
+        public ReturnValue<UserData> GetRowAsTransaction(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return GetRowAsTransaction(row.Id, connection, transaction);
+        }
         /// <summary>
         /// Gets a UserData row from the database by id asynchronously
         /// currently this method uses the id in the row parameter to get the row
@@ -46,6 +50,10 @@ namespace backend.Services.Identity
         public async Task<ReturnValue<UserData>> GetRowAsync(UserData row)
         {
             return await GetRowAsync(row.Id);
+        }
+        public async Task<ReturnValue<UserData>> GetRowAsTransactionAsync(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await GetRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -71,6 +79,20 @@ namespace backend.Services.Identity
 
             return InsertRowBase(_InsertUserDataSQL, FullUserDataParamsNoId(row));
         }
+        public ReturnValue InsertRowAsTransaction(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            //If validation passes, do insert row
+            //set the created and modified dates
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return InsertRowBaseAsTransaction(_InsertUserDataSQL, FullUserDataParamsNoId(row), connection, transaction);
+        }
         /// <summary>
         /// Inserts a UserData row into the database asynchronously
         /// </summary>
@@ -91,6 +113,20 @@ namespace backend.Services.Identity
 
             return await InsertRowBaseAsync(_InsertUserDataSQL, FullUserDataParamsNoId(row));
         }
+        public async Task<ReturnValue> InsertRowAsTransactionAsync(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            //If validation passes, do insert row
+            //set the created and modified dates
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return await InsertRowBaseAsTransactionAsync(_InsertUserDataSQL, FullUserDataParamsNoId(row), connection, transaction);
+        }
 
         //****************************************************************************************************
         // UpdateRow
@@ -110,6 +146,19 @@ namespace backend.Services.Identity
             //do I want to catch errors here or pass them along? for now we're passing
             return UpdateRowBase(_UpdateUserDataSQL, FullUserDataParams(row));
         }
+        public ReturnValue UpdateRowAsTransaction(int id, UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            //If validation passes, do update row
+            //set the modified date
+            row.ModifiedOn = DateTime.Now;
+            return UpdateRowBaseAsTransaction(_UpdateUserDataSQL, FullUserDataParams(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> UpdateRowAsync(int id, UserData row)
         {
@@ -125,15 +174,36 @@ namespace backend.Services.Identity
 
             return await UpdateRowBaseAsync(_UpdateUserDataSQL, FullUserDataParams(row));
         }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(int id, UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            //Do validation
+            var returnValue = _modelValidation.ValidateModel(row);
+            if (!returnValue.Success)
+            {
+                return returnValue;
+            }
+            //If validation passes, do update row
+            //set the modified date
+            row.ModifiedOn = DateTime.Now;
+            return await UpdateRowBaseAsTransactionAsync(_UpdateUserDataSQL, FullUserDataParams(row), connection, transaction);
+        }
 
         public ReturnValue UpdateRow(UserData row)
         {
             return UpdateRow(row.Id, row);
         }
+        public ReturnValue UpdateRowAsTransaction(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return UpdateRowAsTransaction(row.Id, row, connection, transaction);
+        }
 
         public async Task<ReturnValue> UpdateRowAsync(UserData row)
         {
             return await UpdateRowAsync(row.Id, row);
+        }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await UpdateRowAsTransactionAsync(row.Id, row, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -143,10 +213,18 @@ namespace backend.Services.Identity
         {
             return DeleteRow(row.Id);
         }
+        public ReturnValue DeleteRowAsTransaction(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return DeleteRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue> DeleteRowAsync(UserData row)
         {
             return await DeleteRowAsync(row.Id);
+        }
+        public async Task<ReturnValue> DeleteRowAsTransactionAsync(UserData row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await DeleteRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
 

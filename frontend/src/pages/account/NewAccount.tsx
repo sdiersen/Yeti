@@ -22,6 +22,14 @@ const NewAccount: FC = () => {
       try {
         await dispatch(newAccount(username, password));
         console.log("Account state after dispatch: ", accountState);
+        if (accountState.success) {
+          alert("Account created successfully!");
+          navigate("/Login");
+        } else {
+          for (const key in accountState.messages) {
+            alert(`${key}: ${accountState.messages[key]}`);
+          }
+        }
       } catch (error) {
         console.error("Error creating account:", error);
       }
@@ -30,7 +38,7 @@ const NewAccount: FC = () => {
   return (
     <div>
       <h1>Create New Account</h1>
-      <form onSubmit={handleSubmit} action="/api/NewAccount" method="POST">
+      <form onSubmit={handleSubmit}>
         <label htmlFor="username">Username:</label>
         <input
           type="text"

@@ -5,11 +5,12 @@ using Persistence.ModelValidations;
 using Dapper;
 using ErrorHandling;
 using Persistence;
+using Microsoft.Data.SqlClient;
+using Microsoft.Identity.Client;
 
 namespace backend.Services.Transaction
 {
-    public class ItemServices : DbBaseLayer<ItemServices, Item>,
-                                        IDbServicesInterface<Item>
+    public class ItemServices : DbBaseLayer<ItemServices, Item>, IDbServicesInterface<Item>
     {
         public ItemServices(
             ILogger<ItemServices> logger,
@@ -34,10 +35,18 @@ namespace backend.Services.Transaction
         {
             return GetRow(row.Id);
         }
+        public ReturnValue<Item> GetRowAsTransaction(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return GetRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue<Item>> GetRowAsync(Item row)
         {
             return await GetRowAsync(row.Id);
+        }
+        public async Task<ReturnValue<Item>> GetRowAsTransactionAsync(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await GetRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -59,6 +68,17 @@ namespace backend.Services.Transaction
 
             return InsertRowBase(_InsertRowSQL, FullItemParamsNoId(row));
         }
+        public ReturnValue InsertRowAsTransaction(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var validationResult = _modelValidation.ValidateModel(row);
+            if (!validationResult.Success)
+            {
+                return validationResult;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return InsertRowBaseAsTransaction(_InsertRowSQL, FullItemParamsNoId(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> InsertRowAsync(Item row)
         {
@@ -75,6 +95,17 @@ namespace backend.Services.Transaction
             row.ModifiedOn = DateTime.Now;
 
             return await InsertRowBaseAsync(_InsertRowSQL, FullItemParamsNoId(row));
+        }
+        public async Task<ReturnValue> InsertRowAsTransactionAsync(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var validationResult = _modelValidation.ValidateModel(row);
+            if (!validationResult.Success)
+            {
+                return validationResult;
+            }
+            row.CreatedOn = DateTime.Now;
+            row.ModifiedOn = DateTime.Now;
+            return await InsertRowBaseAsTransactionAsync(_InsertRowSQL, FullItemParamsNoId(row), connection, transaction);
         }
 
         //****************************************************************************************************
@@ -96,12 +127,26 @@ namespace backend.Services.Transaction
             //run the query
             return UpdateRowBase(_UpdateRowSQL, FullItemParamsNoId(row));
         }
+        public ReturnValue UpdateRowAsTransaction(int id, Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var validationResult = _modelValidation.ValidateModel(row);
+            if (!validationResult.Success)
+            {
+                return validationResult;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return UpdateRowBaseAsTransaction(_UpdateRowSQL, FullItemParamsNoId(row), connection, transaction);
+        }
 
         //Update row without an id doens't make sense currently as the only
         //unique value in the row is the id.
         public ReturnValue UpdateRow(Item row)
         {
             return UpdateRow(row.Id, row);
+        }
+        public ReturnValue UpdateRowAsTransaction(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return UpdateRowAsTransaction(row.Id, row, connection, transaction);
         }
 
         public async Task<ReturnValue> UpdateRowAsync(int id, Item row)
@@ -119,10 +164,24 @@ namespace backend.Services.Transaction
 
             return await UpdateRowBaseAsync(_UpdateRowSQL, FullItemParamsNoId(row));
         }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(int id, Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            var validationResult = _modelValidation.ValidateModel(row);
+            if (!validationResult.Success)
+            {
+                return validationResult;
+            }
+            row.ModifiedOn = DateTime.Now;
+            return await UpdateRowBaseAsTransactionAsync(_UpdateRowSQL, FullItemParamsNoId(row), connection, transaction);
+        }
 
         public async Task<ReturnValue> UpdateRowAsync(Item row)
         {
             return await UpdateRowAsync(row.Id, row);
+        }
+        public async Task<ReturnValue> UpdateRowAsTransactionAsync(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await UpdateRowAsTransactionAsync(row.Id, row, connection, transaction);
         }
 
         //****************************************************************************************************
@@ -134,10 +193,18 @@ namespace backend.Services.Transaction
         {
             return DeleteRow(row.Id);
         }
+        public ReturnValue DeleteRowAsTransaction(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return DeleteRowAsTransaction(row.Id, connection, transaction);
+        }
 
         public async Task<ReturnValue> DeleteRowAsync(Item row)
         {
             return await DeleteRowAsync(row.Id);
+        }
+        public async Task<ReturnValue> DeleteRowAsTransactionAsync(Item row, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await DeleteRowAsTransactionAsync(row.Id, connection, transaction);
         }
 
         //****************************************************************************************************

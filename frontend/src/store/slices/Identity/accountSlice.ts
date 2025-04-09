@@ -128,6 +128,28 @@ export const getAccount = (acct: AccountType) => async (dispatch: any) => {
   }
 };
 
+export const loginAccount =
+  (username: string, password: string) => async (dispatch: any) => {
+    dispatch(setLoading(true));
+    let acct: AccountType = defaultAccount;
+    acct.username = username;
+    acct.password = password;
+    try {
+      const response = await axiosInstance.post("account/Login", acct);
+      const { data, messages, errors, success } = response.data;
+      if (success) {
+        dispatch(setAccount(data));
+      }
+      dispatch(setMessages(messages || []));
+      dispatch(setErrors(errors || []));
+      dispatch(setSuccess(success));
+    } catch (error) {
+      handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
 export const getAccountById = (id: number) => async (dispatch: any) => {
   dispatch(setLoading(true));
   try {
