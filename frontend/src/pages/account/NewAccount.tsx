@@ -1,8 +1,8 @@
 import { FC, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { newAccount } from "../../store/slices/Identity/accountSlice";
-import { AppDispatch, RootState } from "../../store";
+import { AppDispatch } from "../../store";
 
 const NewAccount: FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -11,7 +11,6 @@ const NewAccount: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const accountState = useSelector((state: RootState) => state.account);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -20,14 +19,13 @@ const NewAccount: FC = () => {
     }
     if (username && password) {
       try {
-        await dispatch(newAccount(username, password));
-        console.log("Account state after dispatch: ", accountState);
-        if (accountState.success) {
+        const result = await dispatch(newAccount(username, password));
+        if (result.success) {
           alert("Account created successfully!");
           navigate("/Login");
         } else {
-          for (const key in accountState.messages) {
-            alert(`${key}: ${accountState.messages[key]}`);
+          for (const key in result.messages) {
+            alert(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {
@@ -44,6 +42,7 @@ const NewAccount: FC = () => {
           type="text"
           id="username"
           name="username"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
@@ -53,6 +52,7 @@ const NewAccount: FC = () => {
           type="password"
           id="password"
           name="password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -62,10 +62,25 @@ const NewAccount: FC = () => {
           type="password"
           id="confirm-password"
           name="confirm-password"
+          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
+        <br />
         <button type="submit">Create Account</button>
+        <button type="button" onClick={() => navigate("/Login")}>
+          Back to Login
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setUsername("");
+            setPassword("");
+            setConfirmPassword("");
+          }}
+        >
+          Clear
+        </button>
       </form>
     </div>
   );

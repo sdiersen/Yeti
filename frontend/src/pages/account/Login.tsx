@@ -14,9 +14,24 @@ const Login: FC = () => {
     e.preventDefault();
     if (username && password) {
       try {
-        await dispatch(loginAccount(username, password));
-        console.log("Login action dispatched with:", { username, password });
-        navigate("/"); // Redirect to home page after successful login
+        const result = await dispatch(loginAccount(username, password));
+        if (result.success) {
+          alert(
+            `Login successful! Welcome, ${result.data.account.username}\nInfo: \n${result.data.account.id}\n${result.data.account.lastLogin}\n${result.data.account.isActive}\n${result.data.account.isLocked}\nRoles:\n${result.data.roleNames}`
+          );
+          navigate("/"); // Redirect to home page after successful login
+          return; //stop further execution
+        }
+        if (result.messages) {
+          for (const key in result.messages) {
+            alert(`${key}: ${result.messages[key]}`);
+          }
+          for (const key in result.errors) {
+            alert(`${key}: ${result.errors[key]}`);
+          }
+          setUsername("");
+          setPassword("");
+        }
       } catch (error) {
         console.error("Error logging in:", error);
       }
@@ -31,6 +46,7 @@ const Login: FC = () => {
           type="text"
           id="username"
           name="username"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
@@ -40,11 +56,15 @@ const Login: FC = () => {
           type="password"
           id="password"
           name="password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <br />
         <button type="submit">Login</button>
+        <button type="button" onClick={() => navigate("/NewAccount")}>
+          Create New Account
+        </button>
       </form>
     </div>
   );

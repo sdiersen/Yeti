@@ -18,3 +18,33 @@ export const defaultAccount: AccountType = {
   createdOn: new Date(0),
   modifiedOn: new Date(0),
 };
+
+export interface LoginDTO {
+  username: string;
+  password: string;
+}
+
+export interface RegisterDTO {
+  username: string;
+  password: string;
+}
+
+export interface UpdateAccountDTO {
+  account: AccountType;
+  roles: number[];
+}
+
+export const defaultUpdateAccountDTO: UpdateAccountDTO = {
+  account: defaultAccount,
+  roles: [],
+};
+
+export interface AccountLoggedInDTO {
+  account: AccountType;
+  roleNames: string[];
+}
+
+export const defaultAccountLoggedInDTO: AccountLoggedInDTO = {
+  account: defaultAccount,
+  roleNames: [],
+};

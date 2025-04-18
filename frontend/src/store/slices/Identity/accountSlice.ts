@@ -1,20 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   AccountType,
+  LoginDTO,
+  RegisterDTO,
+  AccountLoggedInDTO,
+  defaultAccountLoggedInDTO,
   defaultAccount,
 } from "../../../types/Identity/accountType";
+import { ApiResponseDataType } from "../../../types/api/apiResponseType";
 import axiosInstance, { handleAxiosError } from "../../../api/axios";
+import { AxiosError } from "axios";
 
-interface AccountState {
-  account: AccountType | null;
-  messages: string[]; // messages are typically validation issues
-  errors: string[]; // errors are typically server errors
-  success: boolean;
+interface AccountState extends ApiResponseDataType<AccountLoggedInDTO> {
   loading: boolean;
 }
 
 const initialState: AccountState = {
-  account: null,
+  data: defaultAccountLoggedInDTO,
   messages: [],
   errors: [],
   success: false,
@@ -25,8 +27,11 @@ const accountSlice = createSlice({
   name: "account",
   initialState,
   reducers: {
-    setAccount: (state, action: PayloadAction<AccountType | null>) => {
-      state.account = action.payload;
+    setAccount: (state, action: PayloadAction<AccountType>) => {
+      state.data.account = action.payload;
+    },
+    setRoleNames: (state, action: PayloadAction<string[]>) => {
+      state.data.roleNames = action.payload;
     },
     setMessages: (state, action: PayloadAction<string[]>) => {
       state.messages = action.payload;
@@ -43,17 +48,27 @@ const accountSlice = createSlice({
   },
 });
 
-export const { setAccount, setMessages, setErrors, setSuccess, setLoading } =
-  accountSlice.actions;
+export const {
+  setAccount,
+  setRoleNames,
+  setMessages,
+  setErrors,
+  setSuccess,
+  setLoading,
+} = accountSlice.actions;
 
 export const newAccount =
   (username: string, password: string) => async (dispatch: any) => {
     dispatch(setLoading(true));
-    let acct: AccountType = defaultAccount;
-    acct.username = username;
-    acct.password = password;
+    let registerDTO: RegisterDTO = {
+      username: username,
+      password: password,
+    };
     try {
-      const response = await axiosInstance.post("account/NewAccount", acct);
+      const response = await axiosInstance.post(
+        "account/NewAccount",
+        registerDTO
+      );
       const { data, messages, errors, success } = response.data;
 
       if (success) {
@@ -62,6 +77,7 @@ export const newAccount =
       dispatch(setMessages(messages || []));
       dispatch(setErrors(errors || []));
       dispatch(setSuccess(success));
+      return response.data;
     } catch (error) {
       handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
     } finally {
@@ -96,7 +112,7 @@ export const deleteAccount = (acct: AccountType) => async (dispatch: any) => {
     });
     const { messages, errors, success } = response.data;
     if (success) {
-      dispatch(setAccount(null));
+      dispatch(setAccount(defaultAccount));
     }
     dispatch(setMessages(messages || []));
     dispatch(setErrors(errors || []));
@@ -129,22 +145,48 @@ export const getAccount = (acct: AccountType) => async (dispatch: any) => {
 };
 
 export const loginAccount =
-  (username: string, password: string) => async (dispatch: any) => {
+  (username: string, password: string) =>
+  async (dispatch: any): Promise<AccountState> => {
     dispatch(setLoading(true));
-    let acct: AccountType = defaultAccount;
-    acct.username = username;
-    acct.password = password;
+    let loginDTO: LoginDTO = {
+      username: username,
+      password: password,
+    };
     try {
-      const response = await axiosInstance.post("account/Login", acct);
+      const response = await axiosInstance.post<
+        ApiResponseDataType<AccountLoggedInDTO>
+      >("account/Login", loginDTO);
       const { data, messages, errors, success } = response.data;
       if (success) {
-        dispatch(setAccount(data));
+        dispatch(setAccount(data.account));
+        dispatch(setRoleNames(data.roleNames));
       }
       dispatch(setMessages(messages || []));
       dispatch(setErrors(errors || []));
       dispatch(setSuccess(success));
+      return {
+        data,
+        messages: messages || [],
+        errors: errors || [],
+        success: success,
+        loading: false,
+      };
     } catch (error) {
-      handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
+      const axiosError = error as AxiosError<AccountState>;
+      handleAxiosError(
+        axiosError,
+        dispatch,
+        setErrors,
+        setMessages,
+        setSuccess
+      );
+      return {
+        data: axiosError.response?.data?.data || defaultAccountLoggedInDTO,
+        messages: axiosError.response?.data?.messages || [],
+        errors: axiosError.response?.data?.errors || [],
+        success: false,
+        loading: false,
+      };
     } finally {
       dispatch(setLoading(false));
     }
