@@ -1,20 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Persistence;
+using Persistence.DTOs.Identity;
 using Persistence.Models.Identity;
+using Persistence.Services.Identity;
 
 namespace backend.Controllers.Identity
 {
     public class AccountController : AbstractBaseController<Account>
     {
-        public AccountController(IDbServicesInterface<Account> accountServices, ILogger<AccountController> logger)
-            : base(accountServices, logger)
+        private readonly IAccountServices _accountServices;
+        public AccountController(ILogger<AccountController> logger, IAccountServices accountServices)
+            : base(logger)
         {
+            _accountServices = accountServices;
         }
 
         [HttpPost("NewAccount")]
-        public async Task<ActionResult> Create([FromBody] Account newAccount)
+        public async Task<ActionResult> Create([FromBody] RegisterDTO newAccount)
         {
-            var returnValue = await _dbService.InsertRowAsync(newAccount);
+            var returnValue = await _accountServices.CreateAccountAsync(newAccount);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -23,9 +26,9 @@ namespace backend.Controllers.Identity
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult> Login([FromBody] Account account)
+        public async Task<ActionResult> Login([FromBody] LoginDTO account)
         {
-            var returnValue = await _dbService.GetRowAsync(account);
+            var returnValue = await _accountServices.LoginAsync(account);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -34,9 +37,13 @@ namespace backend.Controllers.Identity
         }
 
         [HttpPut("UpdateAccount")]
-        public async Task<ActionResult> Update([FromBody] Account account)
+        public async Task<ActionResult> Update([FromBody] UpdateAccountDTO updateAccount)
         {
-            var returnValue = await _dbService.UpdateRowAsync(account);
+            if (updateAccount == null || updateAccount.Account == null || updateAccount.Roles == null)
+            {
+                return BadRequest("Invalid data provided for UpdateAccount.");
+            }
+            var returnValue = await _accountServices.UpdateAccountAsync(updateAccount);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -44,32 +51,11 @@ namespace backend.Controllers.Identity
             return Ok(returnValue);
         }
 
-        [HttpDelete("DeleteAccount")]
-        public async Task<ActionResult> Delete([FromBody] Account account)
+        [HttpDelete("DeleteAccount/{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var returnValue = await _dbService.DeleteRowAsync(account);
-            if (!returnValue.Success)
-            {
-                return BadRequest(returnValue);
-            }
-            return Ok(returnValue);
-        }
-
-        [HttpGet("GetAccount")]
-        public async Task<ActionResult> Get([FromQuery] Account account)
-        {
-            var returnValue = await _dbService.GetRowAsync(account);
-            if (!returnValue.Success)
-            {
-                return BadRequest(returnValue);
-            }
-            return Ok(returnValue);
-        }
-
-        [HttpGet("GetAccountById/{id}")]
-        public async Task<ActionResult> GetById(int id)
-        {
-            var returnValue = await _dbService.GetRowAsync(id);
+            // Assuming there's a method in IAccountServices to delete an account by ID
+            var returnValue = await _accountServices.DeleteAccountAsync(id);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);

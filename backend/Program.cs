@@ -1,5 +1,4 @@
 using Persistence;
-using backend.Services;
 using Persistence.Helpers;
 
 Console.WriteLine("Starting up...");
@@ -22,9 +21,6 @@ builder.Services.AddCors(options =>
 });
 
 
-// Custom Services
-builder.Services.CustomModelValidationServices();
-builder.Services.CustomDbServices();
 
 // Add Database Helpers
 builder.Services.AddSingleton<IDatabaseHelpers, DatabaseHelpers>();
@@ -39,6 +35,9 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+// Custom Services
+builder.Services.CustomPersistenceServices(builder.Configuration);
 
 var app = builder.Build();
 
