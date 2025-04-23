@@ -54,11 +54,25 @@ namespace backend.Controllers.Identity
         [HttpDelete("DeleteAccount/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            // Assuming there's a method in IAccountServices to delete an account by ID
             var returnValue = await _accountServices.DeleteAccountAsync(id);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
+            }
+            return Ok(returnValue);
+        }
+
+        [HttpGet("GetAllAccounts")]
+        public async Task<ActionResult> GetAll()
+        {
+            var returnValue = await _accountServices.GetAllAccountsAsync();
+            if (!returnValue.Success)
+            {
+                return BadRequest(returnValue);
+            }
+            if (returnValue.Data == null || returnValue.Data.Count <= 0)
+            {
+                return NotFound("No accounts found.");
             }
             return Ok(returnValue);
         }
