@@ -5,11 +5,10 @@ import {
   RegisterDTO,
   AccountLoggedInDTO,
   defaultAccountLoggedInDTO,
-  defaultAccount,
 } from "../../../types/Identity/accountType";
 import { ApiResponseDataType } from "../../../types/api/apiResponseType";
 import axiosInstance, { handleAxiosError } from "../../../api/axios";
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 
 interface AccountState extends ApiResponseDataType<AccountLoggedInDTO> {
   loading: boolean;
@@ -17,8 +16,8 @@ interface AccountState extends ApiResponseDataType<AccountLoggedInDTO> {
 
 const initialState: AccountState = {
   data: defaultAccountLoggedInDTO,
-  messages: [],
-  errors: [],
+  messages: {},
+  errors: {},
   success: false,
   loading: false,
 };
@@ -33,10 +32,13 @@ const accountSlice = createSlice({
     setRoleNames: (state, action: PayloadAction<string[]>) => {
       state.data.roleNames = action.payload;
     },
-    setMessages: (state, action: PayloadAction<string[]>) => {
+    setMessages: (
+      state,
+      action: PayloadAction<{ [key: string]: string[] }>
+    ) => {
       state.messages = action.payload;
     },
-    setErrors: (state, action: PayloadAction<string[]>) => {
+    setErrors: (state, action: PayloadAction<{ [key: string]: string[] }>) => {
       state.errors = action.payload;
     },
     setSuccess: (state, action: PayloadAction<boolean>) => {
@@ -44,6 +46,13 @@ const accountSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
+    },
+    logout: (state) => {
+      state.data = defaultAccountLoggedInDTO;
+      state.messages = {};
+      state.errors = {};
+      state.success = false;
+      state.loading = false;
     },
   },
 });
@@ -55,6 +64,7 @@ export const {
   setErrors,
   setSuccess,
   setLoading,
+  logout,
 } = accountSlice.actions;
 
 export const newAccount =
@@ -74,8 +84,8 @@ export const newAccount =
       if (success) {
         dispatch(setAccount(data));
       }
-      dispatch(setMessages(messages || []));
-      dispatch(setErrors(errors || []));
+      dispatch(setMessages(messages || {}));
+      dispatch(setErrors(errors || {}));
       dispatch(setSuccess(success));
       return response.data;
     } catch (error) {
@@ -94,8 +104,8 @@ export const updateAccount = (acct: AccountType) => async (dispatch: any) => {
     if (success) {
       dispatch(setAccount(data));
     }
-    dispatch(setMessages(messages || []));
-    dispatch(setErrors(errors || []));
+    dispatch(setMessages(messages || {}));
+    dispatch(setErrors(errors || {}));
     dispatch(setSuccess(success));
   } catch (error) {
     handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
@@ -104,21 +114,33 @@ export const updateAccount = (acct: AccountType) => async (dispatch: any) => {
   }
 };
 
-export const deleteAccount = (acct: AccountType) => async (dispatch: any) => {
+// This function is used to delete an account by its ID. This account is not the currently logged-in account.
+// So it does not modify the current account in the store.
+export const deleteAccount = (id: number) => async (dispatch: any) => {
   dispatch(setLoading(true));
   try {
-    const response = await axiosInstance.delete("account/DeleteAccount", {
-      data: acct,
-    });
+    const response = await axiosInstance.delete(`account/DeleteAccount/${id}`);
     const { messages, errors, success } = response.data;
-    if (success) {
-      dispatch(setAccount(defaultAccount));
-    }
-    dispatch(setMessages(messages || []));
-    dispatch(setErrors(errors || []));
-    dispatch(setSuccess(success));
+    return { messages, errors, success };
   } catch (error) {
-    handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
+    if (isAxiosError(error)) {
+      let errorMessage: string[] = []; //string array to hold error messages
+      const { messages, errors, success } = error.response?.data;
+      errorMessage.push(`Axios Message: ${error.message}`);
+      if (error.code) {
+        errorMessage.push(`Axios Code: ${error.code}`);
+      }
+      if (error.response?.status) {
+        errorMessage.push(`Axios Status: ${error.response.status.toString()}`);
+      }
+      errors.push({ axioserrors: errorMessage });
+      return { messages, errors, success };
+    } else {
+      const errors = { unknown: ["An unexpected error occurred."] };
+      const success = false;
+      const messages = { unkown: ["An unexpected error occurred."] };
+      return { messages, errors, success };
+    }
   } finally {
     dispatch(setLoading(false));
   }
@@ -134,8 +156,8 @@ export const getAccount = (acct: AccountType) => async (dispatch: any) => {
     if (success) {
       dispatch(setAccount(data));
     }
-    dispatch(setMessages(messages || []));
-    dispatch(setErrors(errors || []));
+    dispatch(setMessages(messages || {}));
+    dispatch(setErrors(errors || {}));
     dispatch(setSuccess(success));
   } catch (error) {
     handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);
@@ -161,13 +183,13 @@ export const loginAccount =
         dispatch(setAccount(data.account));
         dispatch(setRoleNames(data.roleNames));
       }
-      dispatch(setMessages(messages || []));
-      dispatch(setErrors(errors || []));
+      dispatch(setMessages(messages || {}));
+      dispatch(setErrors(errors || {}));
       dispatch(setSuccess(success));
       return {
         data,
-        messages: messages || [],
-        errors: errors || [],
+        messages: messages || {},
+        errors: errors || {},
         success: success,
         loading: false,
       };
@@ -182,8 +204,8 @@ export const loginAccount =
       );
       return {
         data: axiosError.response?.data?.data || defaultAccountLoggedInDTO,
-        messages: axiosError.response?.data?.messages || [],
-        errors: axiosError.response?.data?.errors || [],
+        messages: axiosError.response?.data?.messages || {},
+        errors: axiosError.response?.data?.errors || {},
         success: false,
         loading: false,
       };
@@ -201,8 +223,8 @@ export const getAccountById = (id: number) => async (dispatch: any) => {
     if (success) {
       dispatch(setAccount(data));
     }
-    dispatch(setMessages(messages || []));
-    dispatch(setErrors(errors || []));
+    dispatch(setMessages(messages || {}));
+    dispatch(setErrors(errors || {}));
     dispatch(setSuccess(success));
   } catch (error) {
     handleAxiosError(error, dispatch, setErrors, setMessages, setSuccess);

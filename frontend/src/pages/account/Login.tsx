@@ -1,6 +1,6 @@
-import { FC, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
+import { FC, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
 import { loginAccount } from "../../store/slices/Identity/accountSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -10,16 +10,21 @@ const Login: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  const { data } = useSelector((state: RootState) => state.account);
+
+  useEffect(() => {
+    if (data.account.id > 0) {
+      navigate("/Home"); // Redirect to home page if already logged in
+    }
+  }, [data.account, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username && password) {
       try {
         const result = await dispatch(loginAccount(username, password));
         if (result.success) {
-          alert(
-            `Login successful! Welcome, ${result.data.account.username}\nInfo: \n${result.data.account.id}\n${result.data.account.lastLogin}\n${result.data.account.isActive}\n${result.data.account.isLocked}\nRoles:\n${result.data.roleNames}`
-          );
-          navigate("/"); // Redirect to home page after successful login
+          navigate("/Home"); // Redirect to home page after successful login
           return; //stop further execution
         }
         if (result.messages) {

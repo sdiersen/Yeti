@@ -11,13 +11,14 @@ const AppRoutes: FC = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/Unauthorized" element={<Unauthorized />} />
+      <Route path="/" element={<Login />} />
       <Route path="/Login" element={<Login />} />
+      <Route path="/Unauthorized" element={<Unauthorized />} />
       <Route path="/NewAccount" element={<NewAccount />} />
 
       {/* User Routes */}
       <Route element={<ProtectedRoute requiredRoles={["User"]} />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/Home" element={<Home />} />
       </Route>
 
       {/* Admin Routes */}

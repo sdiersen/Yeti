@@ -10,8 +10,8 @@ const axiosInstance = axios.create({
 export const handleAxiosError = (
   error: unknown,
   dispatch: any,
-  setErrors: (errors: string[]) => void,
-  setMessages: (messages: string[]) => void,
+  setErrors: (errors: { [key: string]: string[] }) => void,
+  setMessages: (messages: { [key: string]: string[] }) => void,
   setSuccess: (success: boolean) => void
 ) => {
   if (isAxiosError(error)) {
@@ -35,10 +35,10 @@ export const handleAxiosError = (
     if (error.response?.status) {
       errorMessage.push(`Axios Status: ${error.response.status.toString()}`);
     }
-    dispatch(setErrors(errorMessage));
+    dispatch(setErrors({ axioserrors: errorMessage }));
     dispatch(setSuccess(false)); // this assumes if there is an axios error, then success is always false.
   } else {
-    dispatch(setErrors(["An unexpected error occurred."]));
+    dispatch(setErrors({ unknown: ["An unexpected error occurred."] }));
     dispatch(setSuccess(false));
   }
 };

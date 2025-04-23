@@ -1,12 +1,12 @@
 export interface ApiResponseDataType<T = any> {
   data: T;
-  messages: string[];
-  errors: string[];
+  messages: { [key: string]: string[] };
+  errors: { [key: string]: string[] };
   success: boolean;
 }
 
 export interface ApiResponseType {
-  messages: string[];
-  errors: string[];
+  messages: { [key: string]: string[] };
+  errors: { [key: string]: string[] };
   success: boolean;
 }

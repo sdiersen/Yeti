@@ -12,11 +12,11 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ requiredRoles }) => {
 
   // Check if the user is logged in and has the required roles
   const hasAccess =
-    data.account &&
-    data.roleNames &&
+    data.account.id > 0 &&
+    data.roleNames.length > 0 &&
     data.roleNames.some((role) => requiredRoles.includes(role));
 
-  if (!data.account) {
+  if (data.account.id <= 0) {
     // Redirect to login if the user is not logged in
     return <Navigate to="/Login" />;
   }

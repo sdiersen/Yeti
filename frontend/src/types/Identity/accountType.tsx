@@ -1,4 +1,5 @@
 import { BaseModelType } from "../baseModelType";
+import { RoleType } from "./roleType";
 
 export interface AccountType extends BaseModelType {
   username: string;
@@ -48,3 +49,8 @@ export const defaultAccountLoggedInDTO: AccountLoggedInDTO = {
   account: defaultAccount,
   roleNames: [],
 };
+
+export interface AccountWithRolesDTO {
+  account: AccountType;
+  roles: RoleType[];
+}
