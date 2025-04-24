@@ -51,7 +51,7 @@ const AdminAccountScreen: FC = () => {
 
   return (
     <div>
-      <h1>Admin Account</h1>
+      <h1>Account List</h1>
       <table className="table table-striped">
         <thead>
           <tr>
