@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CategoryType } from "../../../types/transaction/categoryType";
+import { AccountRoleType } from "../../../types/Identity/accountRole";
 import axiosInstance, {
   handleAxiosError,
   handleAxiosErrorTyped,
@@ -18,8 +18,8 @@ const initialState: LoadingState = {
   loading: false,
 };
 
-const categorySlice = createSlice({
-  name: "category",
+const accountRoleSlce = createSlice({
+  name: "accountRole",
   initialState,
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -28,16 +28,16 @@ const categorySlice = createSlice({
   },
 });
 
-export const { setLoading } = categorySlice.actions;
+export const { setLoading } = accountRoleSlce.actions;
 
-export const newCategory =
-  (category: CategoryType) =>
+export const newAccountRole =
+  (acctRole: AccountRoleType) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.post<ApiResponseType>(
-        "category/NewCategory",
-        category
+        "accountRole/NewAccountRole",
+        acctRole
       );
       return response.data;
     } catch (error) {
@@ -47,32 +47,31 @@ export const newCategory =
     }
   };
 
-export const updateCategory =
-  (category: CategoryType) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<CategoryType>> => {
+export const updateAccountRole =
+  (acctRole: AccountRoleType) =>
+  async (
+    dispatch: AppDispatch
+  ): Promise<ApiResponseDataType<AccountRoleType>> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.put<
-        ApiResponseDataType<CategoryType>
-      >("category/UpdateCategory", category);
+        ApiResponseDataType<AccountRoleType>
+      >("accountRole/UpdateAccountRole", acctRole);
       return response.data;
     } catch (error) {
-      return handleAxiosErrorTyped<CategoryType>(error);
+      return handleAxiosErrorTyped<AccountRoleType>(error);
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-export const deleteCategory =
-  (category: CategoryType) =>
+export const deleteAccountRole =
+  (acctRoleId: number) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.delete<ApiResponseType>(
-        "category/DeleteCategory",
-        {
-          data: category,
-        }
+        `accountRole/DeleteAccountRole/${acctRoleId}`
       );
       return response.data;
     } catch (error) {
@@ -82,38 +81,42 @@ export const deleteCategory =
     }
   };
 
-export const getCategory =
-  (category: CategoryType) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<CategoryType>> => {
+export const getAccountRole =
+  (accountRole: AccountRoleType) =>
+  async (
+    dispatch: AppDispatch
+  ): Promise<ApiResponseDataType<AccountRoleType>> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.get<
-        ApiResponseDataType<CategoryType>
-      >("category/GetCategory", {
-        params: category,
+        ApiResponseDataType<AccountRoleType>
+      >("accountRole/GetAccountRole", {
+        params: accountRole,
       });
       return response.data;
     } catch (error) {
-      return handleAxiosErrorTyped<CategoryType>(error);
+      return handleAxiosErrorTyped<AccountRoleType>(error);
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-export const getCategoryById =
-  (categoryId: number) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<CategoryType>> => {
+export const getAccountRoleById =
+  (acctRoleId: number) =>
+  async (
+    dispatch: AppDispatch
+  ): Promise<ApiResponseDataType<AccountRoleType>> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.get<
-        ApiResponseDataType<CategoryType>
-      >(`category/GetCategoryById/${categoryId}`);
+        ApiResponseDataType<AccountRoleType>
+      >(`accountRole/GetAccountRoleById/${acctRoleId}`);
       return response.data;
     } catch (error) {
-      return handleAxiosErrorTyped<CategoryType>(error);
+      return handleAxiosErrorTyped<AccountRoleType>(error);
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-export const categoryReducer = categorySlice.reducer;
+export const accountRoleReducer = accountRoleSlce.reducer;

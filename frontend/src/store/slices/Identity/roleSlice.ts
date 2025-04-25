@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RoleType } from "../../../types/Identity/roleType";
-import axiosInstance, { isAxiosError } from "../../../api/axios";
+import axiosInstance, { handleAxiosErrorTyped } from "../../../api/axios";
 import { ApiResponseDataType } from "../../../types/api/apiResponseType";
+import { AppDispatch } from "../..";
 
 interface RoleState {
   roles: RoleType[];
@@ -11,20 +12,6 @@ interface RoleState {
 const initialRoleState: RoleState = {
   roles: [],
   loading: false,
-};
-
-interface responseDataType {
-  data: RoleType[];
-  messages: { [key: string]: string[] };
-  errors: { [key: string]: string[] };
-  success: boolean;
-}
-
-const initialResponseData: responseDataType = {
-  data: [],
-  messages: {},
-  errors: {},
-  success: false,
 };
 
 const roleSlice = createSlice({
@@ -42,7 +29,7 @@ const roleSlice = createSlice({
 
 export const { setRoles, setLoading } = roleSlice.actions;
 
-export const getAllRoles = () => async (dispatch: any) => {
+export const getAllRoles = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
     const response = await axiosInstance.get<ApiResponseDataType<RoleType[]>>(
@@ -52,14 +39,7 @@ export const getAllRoles = () => async (dispatch: any) => {
     success ? dispatch(setRoles(data)) : dispatch(setRoles([]));
     return response.data;
   } catch (error) {
-    if (isAxiosError(error)) {
-      console.error("Axios error:", error.message);
-      console.error("Axios error code:", error.code);
-      console.error("Axios error response:", error.response?.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    return initialResponseData;
+    return handleAxiosErrorTyped<RoleType[]>(error);
   } finally {
     dispatch(setLoading(false));
   }

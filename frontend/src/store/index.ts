@@ -6,7 +6,7 @@ import { accountReducer } from "./slices/Identity/accountSlice";
 import { roleReducer } from "./slices/Identity/roleSlice";
 import { userDataReducer } from "./slices/Identity/userDataSlice";
 import { categoryReducer } from "./slices/Transaction/categorySlice";
-import { accountRoleReducer } from "./slices/Identity/accountRoleSlce";
+import { accountRoleReducer } from "./slices/Identity/accountRoleSlice";
 import { categoryItemReducer } from "./slices/Transaction/categoryItemSlice";
 import { entryReducer } from "./slices/Transaction/entrySlice";
 import { itemReducer } from "./slices/Transaction/ItemSlice";

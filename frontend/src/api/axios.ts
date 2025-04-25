@@ -1,4 +1,9 @@
 import axios, { isAxiosError } from "axios";
+import {
+  ApiResponseDataType,
+  ApiResponseType,
+  defaultApiResponseDataType,
+} from "../types/api/apiResponseType";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5238/api",
@@ -7,40 +12,80 @@ const axiosInstance = axios.create({
   },
 });
 
-export const handleAxiosError = (
-  error: unknown,
-  dispatch: any,
-  setErrors: (errors: { [key: string]: string[] }) => void,
-  setMessages: (messages: { [key: string]: string[] }) => void,
-  setSuccess: (success: boolean) => void
-) => {
+export const handleAxiosErrorTyped = <T>(
+  error: any
+): ApiResponseDataType<T> => {
+  let response: ApiResponseDataType<T> = {
+    data: null as unknown as T,
+    messages: {},
+    errors: {},
+    success: false,
+  };
+
   if (isAxiosError(error)) {
-    let errorMessage: string[] = []; //string array to hold error messages
     if (error.response?.data) {
-      //it is an axios error, but we have data from server so use it.
-      const { errors, messages } = error.response.data;
-      if (Array.isArray(errors)) {
-        errorMessage = [...errors];
-      } else {
-        errorMessage.push(errors);
-      }
-      dispatch(setMessages(messages || []));
+      const { data, messages, errors } = error.response
+        .data as ApiResponseDataType<T>;
+      response.data = data;
+      response.messages = messages || {};
+      response.errors = errors || {};
     }
     if (error.message) {
-      errorMessage.push(`Axios Message: ${error.message}`);
+      response.errors["axios"] = [`Axios Message: ${error.message}`];
     }
     if (error.code) {
-      errorMessage.push(`Axios Code: ${error.code}`);
+      response.errors["axios"] = [
+        ...(response.errors["axios"] || {}),
+        `Axios Code: ${error.code}`,
+      ];
     }
     if (error.response?.status) {
-      errorMessage.push(`Axios Status: ${error.response.status.toString()}`);
+      response.errors["axios"] = [
+        ...(response.errors["axios"] || []),
+        `Axios Status: ${error.response.status.toString()}`,
+      ];
     }
-    dispatch(setErrors({ axioserrors: errorMessage }));
-    dispatch(setSuccess(false)); // this assumes if there is an axios error, then success is always false.
   } else {
-    dispatch(setErrors({ unknown: ["An unexpected error occurred."] }));
-    dispatch(setSuccess(false));
+    response = defaultApiResponseDataType as ApiResponseDataType<T>;
+    response.errors["unknown"] = ["Unknown error occurred"];
+    response.errors["unknonw"].push(error.message);
+    response.success = false;
   }
+  return response;
+};
+
+export const handleAxiosError = (error: any): ApiResponseType => {
+  const response: ApiResponseType = {
+    messages: {},
+    errors: {},
+    success: false,
+  };
+
+  if (error.response?.data) {
+    const { messages, errors } = error.response.data as ApiResponseType;
+    response.messages = messages || {};
+    response.errors = errors || {};
+  }
+  if (error.message) {
+    response.errors["axios"] = [`Axios Message: ${error.message}`];
+  }
+  if (error.code) {
+    response.errors["axios"] = [
+      ...(response.errors["axios"] || []),
+      `Axios Code: ${error.code}`,
+    ];
+  }
+  if (error.response?.status) {
+    response.errors["axios"] = [
+      ...(response.errors["axios"] || []),
+      `Axios Status: ${error.response.status.toString()}`,
+    ];
+  } else {
+    response.errors["unknown"] = ["Unknown error occurred"];
+    response.errors["unknonw"].push(error.message);
+    response.success = false;
+  }
+  return response;
 };
 
 export default axiosInstance;
