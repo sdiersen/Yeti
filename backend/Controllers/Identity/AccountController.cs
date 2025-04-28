@@ -15,9 +15,20 @@ namespace backend.Controllers.Identity
         }
 
         [HttpPost("NewAccount")]
-        public async Task<ActionResult> Create([FromBody] RegisterDTO newAccount)
+        public async Task<ActionResult> Create([FromBody] RegisterDefaultDTO newAccount)
         {
             var returnValue = await _accountServices.CreateAccountAsync(newAccount);
+            if (!returnValue.Success)
+            {
+                return BadRequest(returnValue);
+            }
+            return Ok(returnValue);
+        }
+
+        [HttpPost("AdminCreateAccount")]
+        public async Task<ActionResult> AdminCreateAccount([FromBody] UpdateAccountDTO newAccount)
+        {
+            var returnValue = await _accountServices.AdminCreateAccountAsync(newAccount);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
