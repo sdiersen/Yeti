@@ -5,6 +5,7 @@ import {
   RegisterDTO,
   AccountLoggedInDTO,
   defaultAccountLoggedInDTO,
+  UpdateAccountDTO,
 } from "../../../types/Identity/accountType";
 import {
   ApiResponseDataType,
@@ -71,8 +72,25 @@ export const newAccount =
     }
   };
 
+export const adminCreateAccount =
+  (newAccount: UpdateAccountDTO) =>
+  async (dispatch: AppDispatch): Promise<ApiResponseType> => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axiosInstance.post<ApiResponseType>(
+        "account/AdminCreateAccount",
+        newAccount
+      );
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
 export const updateAccount =
-  (acct: AccountType) =>
+  (acct: UpdateAccountDTO) =>
   async (
     dispatch: AppDispatch
   ): Promise<ApiResponseDataType<AccountLoggedInDTO>> => {

@@ -6,6 +6,7 @@ import { ApiResponseDataType } from "../../types/api/apiResponseType";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import LockModifyDelete from "../../components/buttons/LockModifyDelete";
+import LogoutButton from "../../components/account/LogoutButton";
 
 const AdminAccountScreen: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,6 +53,21 @@ const AdminAccountScreen: FC = () => {
   return (
     <div>
       <h1>Account List</h1>
+      <div className="d-flex">
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/CreateUserAccount")}
+        >
+          Create New Account
+        </button>
+        <button
+          className="btn btn-secondary ms-4"
+          onClick={() => navigate("/AdminDashboard")}
+        >
+          Back to Admin Screen
+        </button>
+        <LogoutButton classname="btn-danger ms-4" />
+      </div>
       <table className="table table-striped">
         <thead>
           <tr>
@@ -85,7 +101,9 @@ const AdminAccountScreen: FC = () => {
                 <LockModifyDelete
                   initialLocked={true}
                   onModify={() => {
-                    navigate(`/admin/account/${accountWithRoles.account.id}`);
+                    navigate("/ModifyAccount", {
+                      state: { userInfo: accountWithRoles },
+                    });
                   }}
                   onDelete={() => {
                     if (

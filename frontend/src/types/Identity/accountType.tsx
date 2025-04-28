@@ -54,3 +54,8 @@ export interface AccountWithRolesDTO {
   account: AccountType;
   roles: RoleType[];
 }
+
+export const defaultAccountWithRolesDTO: AccountWithRolesDTO = {
+  account: defaultAccount,
+  roles: [],
+};
