@@ -6,14 +6,25 @@ import LeftSideBar from "../components/dashboard/LeftSideBar";
 import "../assets/css/dashboard.css";
 
 const Dashboard: FC = () => {
+  const leftSideBarProps = {
+    LinkTable: [
+      {
+        name: "Admin",
+        links: [
+          { name: "User Management", uri: "/AdminAccountScreen" },
+          { name: "Create User Account", uri: "/CreateUserAccount" },
+        ],
+      },
+    ],
+  };
 
   return (
     <div className="dashboard-container">
       {/* Top Title Bar */}
       <TopTitleBar />
       <div className="dashboard-content">
-        {/* Left Navigation Bar */}        
-        <LeftSideBar />
+        {/* Left Navigation Bar */}
+        <LeftSideBar {...leftSideBarProps} />
 
         {/* Main Content Area */}
         <div className="main-content">

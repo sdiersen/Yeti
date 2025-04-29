@@ -1,7 +1,9 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
+import { LeftSideBarProps } from "../../types/dashboard/leftSideBarType";
 
-const LeftSideBar: FC = () => {
+const LeftSideBar: FC<LeftSideBarProps> = (props) => {
+  const toc = props.LinkTable;
   const [isSideBarVisible, setIsSideBarVisible] = useState(true);
 
   const toggleSideBar = () => {
@@ -16,12 +18,16 @@ const LeftSideBar: FC = () => {
     >
       <div className="left-sidebar">
         <nav className="nav flex-column mt-3">
-          <Link to="/AdminAccountScreen" className="nav-link">
-            Admin Accounts
-          </Link>
-          <Link to="/CreateUserAccount" className="nav-link">
-            Create New Account
-          </Link>
+          {toc.map((linkGroup, index) => (
+            <div key={index} className="nav-group">
+              <h5 className="nav-title">{linkGroup.name}</h5>
+              {linkGroup.links.map((link, linkIndex) => (
+                <Link key={linkIndex} to={link.uri} className="nav-link">
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          ))}
         </nav>
       </div>
       <button className="sidebar-toggle" onClick={toggleSideBar}>

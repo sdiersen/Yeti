@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AccountRoleType } from "../../../types/Identity/accountRole";
+import { AccountRoleType } from "../../../types/Identity/accountRoleType";
 import axiosInstance, {
   handleAxiosError,
   handleAxiosErrorTyped,

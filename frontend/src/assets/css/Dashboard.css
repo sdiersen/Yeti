@@ -71,17 +71,32 @@
   background-color: #f8f9fa;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  transition: width 0.3s ease-in-out; /* Smooth transition for visibility */
+}
+
+.left-sidebar-container.hide-left-sidebar .left-sidebar nav {
+  opacity: 0; /* Make the sidebar contents invisible */
+  pointer-events: none; /* Disable interaction with the sidebar contents */
+  transition: none;
+}
+.left-sidebar-container.show-left-sidebar .left-sidebar nav {
+  opacity: 1; /* Make the sidebar contents visible */
+  pointer-events: auto; /* Enable interaction with the sidebar contents */
   transition: opacity 0.3s ease-in-out; /* Smooth transition for visibility */
 }
 
-.left-sidebar-container.hide-left-sidebar .left-sidebar {
-  opacity: 0; /* Make the sidebar contents invisible */
-  pointer-events: none; /* Disable interaction with the sidebar contents */
+/* Add margin to the first Link inside the nav */
+.left-sidebar-container .left-sidebar nav .nav-group:first-child {
+  margin-top: 50px; /* Add space below the toggle button */
 }
 
-/* Add margin to the first Link inside the nav */
-.left-sidebar-container .left-sidebar nav .nav-link:first-child {
-  margin-top: 50px; /* Add space below the toggle button */
+.left-sidebar-container .left-sidebar .nav-group .nav-title {
+  margin: 0;
+}
+
+.left-sidebar-container .left-sidebar .nav-group .nav-link {
+  padding: 0;
+  margin-left: 10px;
 }
 
 /* Toggle Button for Left Sidebar */
