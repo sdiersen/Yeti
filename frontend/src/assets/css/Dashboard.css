@@ -48,18 +48,20 @@
 }
 
 /* Left Sidebar */
+/* Left Sidebar Container */
 .dashboard-content > .left-sidebar-container {
   position: relative;
   height: 100%;
-  flex: 0 0 15%;
-  transition: transform 0.3s ease-in-out;
+  flex: 0 0 15%; /* Sidebar takes up 15% of the width when visible */
+  transition: flex 0.3s ease-in-out; /* Smooth transition for resizing */
 }
+
 .left-sidebar-container.hide-left-sidebar {
-  transform: translateX(-90%);
+  flex: 0 0 50px; /* Shrink the sidebar to the size of the toggle button */
+  overflow: hidden; /* Hide overflowing content */
 }
-.left-sidebar-container.show-left-sidebar {
-  transform: translateX(0);
-}
+
+/* Left Sidebar */
 .left-sidebar-container .left-sidebar {
   position: absolute;
   top: 0;
@@ -69,14 +71,24 @@
   background-color: #f8f9fa;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  transition: transform 0.3s ease-in-out; /* Smooth transition for sidebar visibility */
+  transition: opacity 0.3s ease-in-out; /* Smooth transition for visibility */
+}
+
+.left-sidebar-container.hide-left-sidebar .left-sidebar {
+  opacity: 0; /* Make the sidebar contents invisible */
+  pointer-events: none; /* Disable interaction with the sidebar contents */
+}
+
+/* Add margin to the first Link inside the nav */
+.left-sidebar-container .left-sidebar nav .nav-link:first-child {
+  margin-top: 50px; /* Add space below the toggle button */
 }
 
 /* Toggle Button for Left Sidebar */
 .left-sidebar-container .sidebar-toggle {
   position: absolute;
   top: 10px; /* Align to the top */
-  right: 0; /* Align to the right */
+  left: 10px; /* Keep the button visible inside the shrunken sidebar */
   width: 30px;
   height: 30px;
   background-color: rgba(0, 0, 0, 0.1); /* Shaded circle for the button */
@@ -86,16 +98,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1000;
-  transition: right 0.3s ease-in-out; /* Smooth transition for button position */
+  z-index: 1000; /* Ensure the button is above other elements */
+  transition: left 0.3s ease-in-out; /* Smooth transition for button position */
 }
 
-.left-sidebar-container.hidden .sidebar-toggle {
-  right: -30px; /* Move button slightly outside the container when sidebar is hidden */
-}
-
-.left-sidebar-container.visible .sidebar-toggle {
-  right: 0; /* Align button to the right when sidebar is visible */
+.left-sidebar-container.hide-left-sidebar .sidebar-toggle {
+  left: 10px; /* Keep the button aligned when the sidebar is collapsed */
 }
 
 /* Icon inside the button */

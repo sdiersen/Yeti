@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { Link } from "react-router-dom";
 
 const LeftSideBar: FC = () => {
   const [isSideBarVisible, setIsSideBarVisible] = useState(true);
@@ -15,12 +16,12 @@ const LeftSideBar: FC = () => {
     >
       <div className="left-sidebar">
         <nav className="nav flex-column mt-3">
-          <a href="/AdminAccountScreen" className="nav-link">
+          <Link to="/AdminAccountScreen" className="nav-link">
             Admin Accounts
-          </a>
-          <a href="/NewAccount" className="nav-link">
+          </Link>
+          <Link to="/CreateUserAccount" className="nav-link">
             Create New Account
-          </a>
+          </Link>
         </nav>
       </div>
       <button className="sidebar-toggle" onClick={toggleSideBar}>

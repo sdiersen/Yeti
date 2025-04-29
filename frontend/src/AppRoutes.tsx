@@ -10,33 +10,40 @@ import AdminAccountScreen from "./pages/admin/AdminAccountScreen";
 import ModifyAccount from "./pages/account/ModifyAccount";
 import CreateUserAccount from "./pages/admin/CreateUserAccount";
 import Dashboard from "./pages/Dashboard";
+import Unknown from "./pages/Unknown";
 
 const AppRoutes: FC = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Login />} />
       <Route path="/Login" element={<Login />} />
       <Route path="/Unauthorized" element={<Unauthorized />} />
       <Route path="/NewAccount" element={<NewAccount />} />
-      <Route path="/Dashboard" element={<Dashboard />} />
 
       {/* User Routes */}
       <Route element={<ProtectedRoute requiredRoles={["User"]} />}>
-        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<Dashboard />}>
+          <Route path="Home" element={<Home />} />
+        </Route>
       </Route>
 
       {/* Admin Routes */}
       <Route element={<ProtectedRoute requiredRoles={["Admin"]} />}>
-        <Route path="/AdminDashboard" element={<AdminDashboard />} />
-        <Route path="/AdminAccountScreen" element={<AdminAccountScreen />} />
-        <Route path="/CreateUserAccount" element={<CreateUserAccount />} />
+        <Route path="/" element={<Dashboard />}>
+          <Route path="AdminDashboard" element={<AdminDashboard />} />
+          <Route path="AdminAccountScreen" element={<AdminAccountScreen />} />
+          <Route path="CreateUserAccount" element={<CreateUserAccount />} />
+        </Route>
       </Route>
 
       {/* Admin or User Routes */}
       <Route element={<ProtectedRoute requiredRoles={["Admin", "User"]} />}>
-        <Route path="/ModifyAccount" element={<ModifyAccount />} />
+        <Route path="/" element={<Dashboard />}>
+          <Route path="ModifyAccount" element={<ModifyAccount />} />
+        </Route>
       </Route>
+
+      <Route path="*" element={<Unknown />} />
     </Routes>
   );
 };
