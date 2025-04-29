@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAccountScreen from "./pages/admin/AdminAccountScreen";
 import ModifyAccount from "./pages/account/ModifyAccount";
 import CreateUserAccount from "./pages/admin/CreateUserAccount";
+import Dashboard from "./pages/Dashboard";
 
 const AppRoutes: FC = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes: FC = () => {
       <Route path="/Login" element={<Login />} />
       <Route path="/Unauthorized" element={<Unauthorized />} />
       <Route path="/NewAccount" element={<NewAccount />} />
+      <Route path="/Dashboard" element={<Dashboard />} />
 
       {/* User Routes */}
       <Route element={<ProtectedRoute requiredRoles={["User"]} />}>

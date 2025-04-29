@@ -14,7 +14,7 @@ const Login: FC = () => {
 
   useEffect(() => {
     if (data.account.id > 0) {
-      navigate("/Home"); // Redirect to home page if already logged in
+      navigate("/Dashboard"); // Redirect to home page if already logged in
     }
   }, [data.account, navigate]);
 
@@ -24,7 +24,7 @@ const Login: FC = () => {
       try {
         const result = await dispatch(loginAccount(username, password));
         if (result.success) {
-          navigate("/Home"); // Redirect to home page after successful login
+          navigate("/Dashboard"); // Redirect to home page after successful login
           return; //stop further execution
         }
         if (result.messages) {
