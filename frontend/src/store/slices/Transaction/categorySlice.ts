@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CategoryType } from "../../../types/transaction/categoryType";
+import {
+  CategoryDTO,
+  CategoryType,
+} from "../../../types/transaction/categoryType";
 import axiosInstance, {
   handleAxiosError,
   handleAxiosErrorTyped,
@@ -31,7 +34,7 @@ const categorySlice = createSlice({
 export const { setLoading } = categorySlice.actions;
 
 export const newCategory =
-  (category: CategoryType) =>
+  (category: CategoryDTO) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
@@ -49,30 +52,28 @@ export const newCategory =
 
 export const updateCategory =
   (category: CategoryType) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<CategoryType>> => {
+  async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
-      const response = await axiosInstance.put<
-        ApiResponseDataType<CategoryType>
-      >("category/UpdateCategory", category);
+      const response = await axiosInstance.put<ApiResponseType>(
+        "category/UpdateCategory",
+        category
+      );
       return response.data;
     } catch (error) {
-      return handleAxiosErrorTyped<CategoryType>(error);
+      return handleAxiosError(error);
     } finally {
       dispatch(setLoading(false));
     }
   };
 
 export const deleteCategory =
-  (category: CategoryType) =>
+  (categoryId: number) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.delete<ApiResponseType>(
-        "category/DeleteCategory",
-        {
-          data: category,
-        }
+        `category/DeleteCategory/${categoryId}`
       );
       return response.data;
     } catch (error) {
@@ -95,6 +96,24 @@ export const getCategory =
       return response.data;
     } catch (error) {
       return handleAxiosErrorTyped<CategoryType>(error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+export const getAllCategories =
+  () =>
+  async (
+    dispatch: AppDispatch
+  ): Promise<ApiResponseDataType<CategoryType[]>> => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axiosInstance.get<
+        ApiResponseDataType<CategoryType[]>
+      >("category/GetAllCategories");
+      return response.data;
+    } catch (error) {
+      return handleAxiosErrorTyped<CategoryType[]>(error);
     } finally {
       dispatch(setLoading(false));
     }

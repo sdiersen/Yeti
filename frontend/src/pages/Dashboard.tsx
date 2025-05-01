@@ -15,6 +15,13 @@ const Dashboard: FC = () => {
           { name: "Create User Account", uri: "/CreateUserAccount" },
         ],
       },
+      {
+        name: "Category",
+        links: [
+          { name: "Create Category", uri: "/CreateCategory" },
+          { name: "Category List", uri: "/CategoryList" },
+        ],
+      },
     ],
   };
 

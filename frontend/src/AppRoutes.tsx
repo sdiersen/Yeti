@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
 import Login from "./pages/account/Login";
 import NewAccount from "./pages/account/NewAccount";
 import Unauthorized from "./Unauthorized";
@@ -11,6 +10,9 @@ import ModifyAccount from "./pages/account/ModifyAccount";
 import CreateUserAccount from "./pages/admin/CreateUserAccount";
 import Dashboard from "./pages/Dashboard";
 import Unknown from "./pages/Unknown";
+import CreateCategory from "./components/category/CreateCategory";
+import CategoryList from "./components/category/CategoryList";
+import ModifyCategory from "./components/category/ModifyCategory";
 
 const AppRoutes: FC = () => {
   return (
@@ -23,7 +25,9 @@ const AppRoutes: FC = () => {
       {/* User Routes */}
       <Route element={<ProtectedRoute requiredRoles={["User"]} />}>
         <Route path="/" element={<Dashboard />}>
-          <Route path="Home" element={<Home />} />
+          <Route path="CreateCategory" element={<CreateCategory />} />
+          <Route path="CategoryList" element={<CategoryList />} />
+          <Route path="ModifyCategory" element={<ModifyCategory />} />
         </Route>
       </Route>
 
