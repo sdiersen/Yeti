@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ItemType } from "../../../types/transaction/itemType";
+import { ItemDTO, ItemType } from "../../../types/transaction/itemType";
 import axiosInstance, {
   handleAxiosError,
   handleAxiosErrorTyped,
@@ -31,7 +31,7 @@ export const itemSlice = createSlice({
 export const { setLoading } = itemSlice.actions;
 
 export const newItem =
-  (item: ItemType) =>
+  (item: ItemDTO) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
@@ -65,15 +65,12 @@ export const updateItem =
   };
 
 export const deleteItem =
-  (item: ItemType) =>
+  (itemid: number) =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
       const response = await axiosInstance.delete<ApiResponseType>(
-        "item/DeleteItem",
-        {
-          data: item,
-        }
+        `item/DeleteItem/${itemid}`
       );
       return response.data;
     } catch (error) {
@@ -83,30 +80,13 @@ export const deleteItem =
     }
   };
 
-export const getItem =
-  (item: ItemType) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<ItemType>> => {
+export const getAllItems =
+  () =>
+  async (dispatch: AppDispatch): Promise<ApiResponseDataType<ItemType[]>> => {
     dispatch(setLoading(true));
     try {
-      const response = await axiosInstance.get<ApiResponseDataType<ItemType>>(
-        "item/GetItem",
-        { params: item }
-      );
-      return response.data;
-    } catch (error) {
-      return handleAxiosErrorTyped(error);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
-export const getItemById =
-  (itemId: number) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<ItemType>> => {
-    dispatch(setLoading(true));
-    try {
-      const response = await axiosInstance.get<ApiResponseDataType<ItemType>>(
-        `item/GetItemById/${itemId}`
+      const response = await axiosInstance.get<ApiResponseDataType<ItemType[]>>(
+        "item/GetAllItems"
       );
       return response.data;
     } catch (error) {

@@ -13,6 +13,9 @@ import Unknown from "./pages/Unknown";
 import CreateCategory from "./components/category/CreateCategory";
 import CategoryList from "./components/category/CategoryList";
 import ModifyCategory from "./components/category/ModifyCategory";
+import CreateItem from "./components/item/CreateItem";
+import ItemList from "./components/item/ItemList";
+import ModifyItem from "./components/item/ModifyItem";
 
 const AppRoutes: FC = () => {
   return (
@@ -28,6 +31,9 @@ const AppRoutes: FC = () => {
           <Route path="CreateCategory" element={<CreateCategory />} />
           <Route path="CategoryList" element={<CategoryList />} />
           <Route path="ModifyCategory" element={<ModifyCategory />} />
+          <Route path="CreateItem" element={<CreateItem />} />
+          <Route path="ItemList" element={<ItemList />} />
+          <Route path="ModifyItem" element={<ModifyItem />} />
         </Route>
       </Route>
 
