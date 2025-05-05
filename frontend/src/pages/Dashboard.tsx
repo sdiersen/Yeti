@@ -29,6 +29,13 @@ const Dashboard: FC = () => {
           { name: "Create Item", uri: "/CreateItem" },
         ],
       },
+      {
+        name: "Entry",
+        links: [
+          { name: "Entry List", uri: "/EntryList" },
+          { name: "Create Entry", uri: "/CreateEntry" },
+        ],
+      },
     ],
   };
 

@@ -1,6 +1,5 @@
 using Persistence.Models.Transaction;
 using Microsoft.AspNetCore.Mvc;
-using Persistence;
 using Persistence.DTOs.Transaction;
 using Persistence.Services.Transaction;
 

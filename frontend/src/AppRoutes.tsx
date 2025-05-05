@@ -16,6 +16,8 @@ import ModifyCategory from "./components/category/ModifyCategory";
 import CreateItem from "./components/item/CreateItem";
 import ItemList from "./components/item/ItemList";
 import ModifyItem from "./components/item/ModifyItem";
+import CreateEntry from "./components/entry/CreateEntry";
+import EntryList from "./components/entry/EntryList";
 
 const AppRoutes: FC = () => {
   return (
@@ -34,6 +36,8 @@ const AppRoutes: FC = () => {
           <Route path="CreateItem" element={<CreateItem />} />
           <Route path="ItemList" element={<ItemList />} />
           <Route path="ModifyItem" element={<ModifyItem />} />
+          <Route path="CreateEntry" element={<CreateEntry />} />
+          <Route path="EntryList" element={<EntryList />} />
         </Route>
       </Route>
 
