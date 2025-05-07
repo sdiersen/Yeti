@@ -24,5 +24,27 @@ namespace backend.Controllers.Transaction
             }
             return Ok(results);
         }
+
+        [HttpGet("GetAllEntries")]
+        public async Task<ActionResult> GetAll()
+        {                                      
+            var results = await _entryServices.GetAllEntriesAsync();
+            if (!results.Success)
+            {
+                return BadRequest(results);
+            }
+            return Ok(results);
+        }
+
+        [HttpGet("GetAllEntriesByItemId/{itemId}")]
+        public async Task<ActionResult> GetAllEntriesByItemId(int itemId)
+        {
+            var results = await _entryServices.GetAllEntriesByItemIdAsync(itemId);
+            if (!results.Success)
+            {
+                return BadRequest(results);
+            }
+            return Ok(results);
+        }
     }
 }
