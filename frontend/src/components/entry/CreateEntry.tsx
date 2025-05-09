@@ -30,12 +30,11 @@ const CreateEntry: FC = () => {
           setCategories(result.data);
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
-        alert("An unexpected error occurred while fetching categories.");
       }
     };
     const fetchItems = async () => {
@@ -45,12 +44,11 @@ const CreateEntry: FC = () => {
           setItems(result.data);
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {
         console.error("Error fetching items:", error);
-        alert("An unexpected error occurred while fetching items.");
       }
     };
     fetchCategories();
@@ -62,6 +60,10 @@ const CreateEntry: FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (categoryId === -1 || itemId === -1) {
+      alert("Please select a category and an item.");
+      return;
+    }
     const entryToCreate = {
       categoryId,
       itemId,
@@ -129,6 +131,9 @@ const CreateEntry: FC = () => {
             id="categoryId"
             value={categoryId}
             onChange={(e) => setCategoryId(parseInt(e.target.value))}>
+            <option value={-1} disabled>
+              Select a category
+            </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -144,6 +149,9 @@ const CreateEntry: FC = () => {
             id="itemId"
             value={itemId}
             onChange={(e) => setItemId(parseInt(e.target.value))}>
+            <option value={-1} disabled>
+              Select an item
+            </option>
             {items.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name}

@@ -40,7 +40,7 @@ const CategoryList: FC = () => {
           setCategories(response.data);
         } else {
           for (const key in response.messages) {
-            alert(`${key}: ${response.messages[key]}`);
+            console.log(`${key}: ${response.messages[key]}`);
           }
         }
       } catch (error) {

@@ -25,7 +25,7 @@ const NewAccount: FC = () => {
           navigate("/Login");
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {
@@ -77,8 +77,7 @@ const NewAccount: FC = () => {
             setUsername("");
             setPassword("");
             setConfirmPassword("");
-          }}
-        >
+          }}>
           Clear
         </button>
       </form>

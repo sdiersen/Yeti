@@ -96,4 +96,20 @@ export const getAllItems =
     }
   };
 
+export const getAllItemsByCategoryId =
+  (categoryId: number) =>
+  async (dispatch: AppDispatch): Promise<ApiResponseDataType<ItemType[]>> => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axiosInstance.get<ApiResponseDataType<ItemType[]>>(
+        `item/GetAllItemsByCategoryId/${categoryId}`
+      );
+      return response.data;
+    } catch (error) {
+      return handleAxiosErrorTyped(error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
 export const itemReducer = itemSlice.reducer;

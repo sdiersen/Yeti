@@ -58,10 +58,10 @@ const ModifyAccount: FC = () => {
           result.errors
         );
         for (const key in result.messages) {
-          alert(`${key}: ${result.messages[key]}`);
+          console.log(`${key}: ${result.messages[key]}`);
         }
         for (const key in result.errors) {
-          alert(`${key}: ${result.errors[key]}`);
+          console.log(`${key}: ${result.errors[key]}`);
         }
       }
     } catch (error) {
@@ -125,8 +125,7 @@ const ModifyAccount: FC = () => {
         <button
           type="button"
           className="btn btn-secondary ms-2"
-          onClick={() => navigate("/AdminAccountScreen")}
-        >
+          onClick={() => navigate("/AdminAccountScreen")}>
           Cancel
         </button>
       </form>

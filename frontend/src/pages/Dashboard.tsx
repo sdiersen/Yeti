@@ -9,6 +9,10 @@ const Dashboard: FC = () => {
   const leftSideBarProps = {
     LinkTable: [
       {
+        name: "Budget",
+        links: [{ name: "User Budget", uri: "/UserBudget" }],
+      },
+      {
         name: "Admin",
         links: [
           { name: "User Management", uri: "/AdminAccountScreen" },

@@ -28,12 +28,11 @@ const CreateItem: FC = () => {
           setCategories(result.data);
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
-        alert("An unexpected error occurred while fetching categories.");
       }
     };
     fetchCategories();
@@ -60,7 +59,7 @@ const CreateItem: FC = () => {
           navigate(-1); // For now just go back to the previous page
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {

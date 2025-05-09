@@ -18,6 +18,7 @@ import ItemList from "./components/item/ItemList";
 import ModifyItem from "./components/item/ModifyItem";
 import CreateEntry from "./components/entry/CreateEntry";
 import EntryList from "./components/entry/EntryList";
+import UserBudget from "./components/BudgetViews/UserBudget";
 
 const AppRoutes: FC = () => {
   return (
@@ -38,6 +39,7 @@ const AppRoutes: FC = () => {
           <Route path="ModifyItem" element={<ModifyItem />} />
           <Route path="CreateEntry" element={<CreateEntry />} />
           <Route path="EntryList" element={<EntryList />} />
+          <Route path="UserBudget" element={<UserBudget />} />
         </Route>
       </Route>
 

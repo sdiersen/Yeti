@@ -29,12 +29,11 @@ const ItemList: FC = () => {
           setItems(response.data);
         } else {
           for (const key in response.messages) {
-            alert(`${key}: ${response.messages[key]}`);
+            console.log(`${key}: ${response.messages[key]}`);
           }
         }
       } catch (error) {
         console.error("Error fetching items:", error);
-        alert("An unexpected error occurred while fetching items.");
       }
     };
     const fetchCategories = async () => {
@@ -49,12 +48,11 @@ const ItemList: FC = () => {
           );
         } else {
           for (const key in response.messages) {
-            alert(`${key}: ${response.messages[key]}`);
+            console.log(`${key}: ${response.messages[key]}`);
           }
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
-        alert("An unexpected error occurred while fetching categories.");
       }
     };
     fetchItems();

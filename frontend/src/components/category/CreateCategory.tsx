@@ -24,7 +24,7 @@ const CreateCategory: FC = () => {
           navigate(-1); // For now just go back to the previous page
         } else {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
         }
       } catch (error) {

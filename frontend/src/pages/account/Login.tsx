@@ -29,10 +29,10 @@ const Login: FC = () => {
         }
         if (result.messages) {
           for (const key in result.messages) {
-            alert(`${key}: ${result.messages[key]}`);
+            console.log(`${key}: ${result.messages[key]}`);
           }
           for (const key in result.errors) {
-            alert(`${key}: ${result.errors[key]}`);
+            console.log(`${key}: ${result.errors[key]}`);
           }
           setUsername("");
           setPassword("");

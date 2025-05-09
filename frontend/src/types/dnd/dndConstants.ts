@@ -1,0 +1,6 @@
+export const DRAG_AND_DROP_TYPE = {
+  CATEGORY: "CATEGORY",
+  ITEM: "ITEM",
+  ENTRY: "ENTRY",
+  ACCOUNT: "ACCOUNT",
+};
