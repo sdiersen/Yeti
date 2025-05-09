@@ -46,5 +46,16 @@ namespace backend.Controllers.Transaction
             }
             return Ok(results);
         }
+
+        [HttpPut("UpdateEntry")]
+        public async Task<ActionResult> UpdateEntry([FromBody] Entry entry)
+        {
+            var results = await _entryServices.UpdateEntryAsync(entry);
+            if (!results.Success)
+            {
+                return BadRequest(results);
+            }
+            return Ok(results);
+        }
     }
 }
