@@ -1,20 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { EntryType, EntryTypeDTO } from "../../../types/transaction/entryType";
-import axiosInstance, {
-  handleAxiosError,
-  handleAxiosErrorTyped,
-} from "../../../api/axios";
+import axiosInstance, { handleAxiosError } from "../../../api/axios";
 import { AppDispatch } from "../..";
 import {
   ApiResponseDataType,
   ApiResponseType,
 } from "../../../types/api/apiResponseType";
 
-interface LoadingState {
+interface EntryState {
+  entries: EntryType[];
   loading: boolean;
 }
 
-const initialState: LoadingState = {
+const initialState: EntryState = {
+  entries: [],
   loading: false,
 };
 
@@ -25,21 +24,52 @@ const entrySlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    setEntries: (state, action: PayloadAction<EntryType[]>) => {
+      state.entries = action.payload;
+    },
+    addEntry: (state, action: PayloadAction<EntryType>) => {
+      state.entries.push(action.payload);
+    },
+    updateEntryInState: (state, action: PayloadAction<EntryType>) => {
+      const index = state.entries.findIndex(
+        (entry) => entry.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.entries[index] = action.payload;
+      }
+    },
+    deleteEntryFromState: (state, action: PayloadAction<number>) => {
+      state.entries = state.entries.filter(
+        (entry) => entry.id !== action.payload
+      );
+    },
   },
 });
 
-export const { setLoading } = entrySlice.actions;
+export const {
+  setLoading,
+  setEntries,
+  addEntry,
+  updateEntryInState,
+  deleteEntryFromState,
+} = entrySlice.actions;
 
-export const newEntry =
-  (entry: EntryTypeDTO) =>
+export const fetchAllEntries =
+  () =>
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
-      const response = await axiosInstance.post<ApiResponseType>(
-        "entry/CreateEntry",
-        entry
-      );
-      return response.data;
+      const response = await axiosInstance.get<
+        ApiResponseDataType<EntryType[]>
+      >("/entry/GetAllEntries");
+      if (response.data.success) {
+        dispatch(setEntries(response.data.data));
+      }
+      return {
+        success: response.data.success,
+        messages: response.data.messages,
+        errors: response.data.errors,
+      } as ApiResponseType;
     } catch (error) {
       return handleAxiosError(error);
     } finally {
@@ -47,33 +77,25 @@ export const newEntry =
     }
   };
 
-export const getAllEntries =
-  () =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<EntryType[]>> => {
+export const createEntry =
+  (entry: EntryTypeDTO) =>
+  async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
-      const response = await axiosInstance.get<
-        ApiResponseDataType<EntryType[]>
-      >("entry/GetAllEntries");
-      return response.data;
+      const response = await axiosInstance.post<ApiResponseDataType<EntryType>>(
+        "/entry/CreateEntry",
+        entry
+      );
+      if (response.data.success) {
+        dispatch(addEntry(response.data.data));
+      }
+      return {
+        success: response.data.success,
+        messages: response.data.messages,
+        errors: response.data.errors,
+      } as ApiResponseType;
     } catch (error) {
-      return handleAxiosErrorTyped<EntryType[]>(error);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
-export const getAllEntriesByItemId =
-  (itemId: number) =>
-  async (dispatch: AppDispatch): Promise<ApiResponseDataType<EntryType[]>> => {
-    dispatch(setLoading(true));
-    try {
-      const response = await axiosInstance.get<
-        ApiResponseDataType<EntryType[]>
-      >(`entry/GetAllEntriesByItemId/${itemId}`);
-      return response.data;
-    } catch (error) {
-      return handleAxiosErrorTyped<EntryType[]>(error);
+      return handleAxiosError(error);
     } finally {
       dispatch(setLoading(false));
     }
@@ -84,11 +106,18 @@ export const updateEntry =
   async (dispatch: AppDispatch): Promise<ApiResponseType> => {
     dispatch(setLoading(true));
     try {
-      const response = await axiosInstance.put<ApiResponseType>(
-        `entry/UpdateEntry`,
+      const response = await axiosInstance.put<ApiResponseDataType<EntryType>>(
+        `/entry/UpdateEntry`,
         entry
       );
-      return response.data;
+      if (response.data.success) {
+        dispatch(updateEntryInState(response.data.data));
+      }
+      return {
+        success: response.data.success,
+        messages: response.data.messages,
+        errors: response.data.errors,
+      } as ApiResponseType;
     } catch (error) {
       return handleAxiosError(error);
     } finally {
