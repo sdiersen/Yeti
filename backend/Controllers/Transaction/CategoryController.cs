@@ -17,7 +17,7 @@ namespace backend.Controllers.Transaction
         [HttpPost("NewCategory")]
         public async Task<ActionResult> Create([FromBody] CategoryDTO newCategory)
         {
-            var returnValue = await _categoryServices.CreateCategoryAsync(newCategory);
+            var returnValue = await _categoryServices.CreateAndReturnCategoryAsync(newCategory);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -48,10 +48,10 @@ namespace backend.Controllers.Transaction
             }
             return Ok(returnValue);
         }
-        [HttpPut("UpdateCategory")]
+        [HttpPut("UpdateItem")]
         public async Task<ActionResult> Update([FromBody] Category category)
         {
-            var returnValue = await _categoryServices.UpdateCategoryAsync(category);
+            var returnValue = await _categoryServices.UpdateAndReturnCategoryAsync(category);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);

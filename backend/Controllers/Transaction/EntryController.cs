@@ -17,7 +17,7 @@ namespace backend.Controllers.Transaction
         [HttpPost("CreateEntry")]
         public async Task<ActionResult> CreateEntry([FromBody] EntryDTO entryDTO)
         {
-            var results = await _entryServices.CreateEntryAsync(entryDTO);
+            var results = await _entryServices.CreateAndReturnEntryAsync(entryDTO);
             if (!results.Success)
             {
                 return BadRequest(results);
@@ -50,7 +50,7 @@ namespace backend.Controllers.Transaction
         [HttpPut("UpdateEntry")]
         public async Task<ActionResult> UpdateEntry([FromBody] Entry entry)
         {
-            var results = await _entryServices.UpdateEntryAsync(entry);
+            var results = await _entryServices.UpdateAndReturnEntryAsync(entry);
             if (!results.Success)
             {
                 return BadRequest(results);

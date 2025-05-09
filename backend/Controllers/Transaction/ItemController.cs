@@ -17,7 +17,7 @@ namespace backend.Controllers.Transaction
         [HttpPost("NewItem")]
         public async Task<ActionResult> Create([FromBody] ItemDTO newItem)
         {
-            var returnValue = await _itemServices.CreateItemAsync(newItem);
+            var returnValue = await _itemServices.CreateAndReturnItemAsync(newItem);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
@@ -62,7 +62,7 @@ namespace backend.Controllers.Transaction
         [HttpPut("UpdateItem")]
         public async Task<ActionResult> Update([FromBody] Item item)
         {
-            var returnValue = await _itemServices.UpdateCategoryAsync(item);
+            var returnValue = await _itemServices.UpdateAndReturnItemAsync(item);
             if (!returnValue.Success)
             {
                 return BadRequest(returnValue);
