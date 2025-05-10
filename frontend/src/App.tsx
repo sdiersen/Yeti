@@ -6,6 +6,7 @@ import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { EntryType } from "./types/transaction/entryType";
 import { DroppableEntryTarget } from "./types/dnd/droppableTypes";
 import { updateEntry } from "./store/slices/Transaction/entrySlice";
+import { DraggableEntry } from "./types/dnd/draggableTypes";
 
 const App: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -14,8 +15,7 @@ const App: FC = () => {
     if (!over) {
       return;
     }
-    const draggedEntry = active.data.current as EntryType;
-    console.log("Dragged entry:", draggedEntry);
+    const draggedEntry = (active.data.current as DraggableEntry).entry;
     const dropTarget = over.data.current as DroppableEntryTarget;
     if (
       draggedEntry.categoryId === dropTarget.categoryId &&
@@ -29,7 +29,7 @@ const App: FC = () => {
       categoryId: dropTarget.categoryId,
       itemId: dropTarget.itemId,
     };
-    console.log("Updated entry:", updatedEntry);
+
     try {
       const result = await dispatch(updateEntry(updatedEntry));
       if (result.success) {
