@@ -15,7 +15,7 @@ const App: FC = () => {
       return;
     }
     const draggedEntry = active.data.current as EntryType;
-    console.log("Dragged entry:", draggedEntry.entry);
+    console.log("Dragged entry:", draggedEntry);
     const dropTarget = over.data.current as DroppableEntryTarget;
     if (
       draggedEntry.categoryId === dropTarget.categoryId &&
@@ -25,7 +25,7 @@ const App: FC = () => {
       return;
     }
     const updatedEntry: EntryType = {
-      ...draggedEntry.entry,
+      ...draggedEntry,
       categoryId: dropTarget.categoryId,
       itemId: dropTarget.itemId,
     };

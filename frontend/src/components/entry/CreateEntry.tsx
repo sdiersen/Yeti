@@ -1,18 +1,16 @@
 import { FC, FormEvent, useEffect, useState } from "react";
-import { AppDispatch } from "../../store";
-import { useDispatch } from "react-redux";
-import { getAllCategories } from "../../store/slices/Transaction/categorySlice";
-import { CategoryType } from "../../types/transaction/categoryType";
-import { getAllItems } from "../../store/slices/Transaction/ItemSlice";
-import { ItemType } from "../../types/transaction/itemType";
+import { AppDispatch, RootState } from "../../store";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EntryTypeDTO } from "../../types/transaction/entryType";
-import { newEntry } from "../../store/slices/Transaction/entrySlice";
+import { createEntry } from "../../store/slices/Transaction/entrySlice";
 
 const CreateEntry: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [items, setItems] = useState<ItemType[]>([]); // Assuming you have a ItemDTO defined
+  const categories = useSelector(
+    (state: RootState) => state.category.categories
+  );
+  const items = useSelector((state: RootState) => state.item.items);
   const location = useLocation();
   const [categoryId, setCategoryId] = useState<number>(-1); // Get initial categoryId from location state
   const [itemId, setItemId] = useState<number>(-1); // Get initial itemId from location state
@@ -23,36 +21,6 @@ const CreateEntry: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await dispatch(getAllCategories());
-        if (result.success) {
-          setCategories(result.data);
-        } else {
-          for (const key in result.messages) {
-            console.log(`${key}: ${result.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    const fetchItems = async () => {
-      try {
-        const result = await dispatch(getAllItems());
-        if (result.success) {
-          setItems(result.data);
-        } else {
-          for (const key in result.messages) {
-            console.log(`${key}: ${result.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-    fetchCategories();
-    fetchItems();
     setCategoryId(location.state?.categoryId ?? -1); // Get initial categoryId from location state
     setItemId(location.state?.itemId ?? -1); // Get initial itemId from location state
   }, [dispatch]);
@@ -74,7 +42,7 @@ const CreateEntry: FC = () => {
     } as EntryTypeDTO; // Replace with your actual EntryDTO type
 
     try {
-      const result = await dispatch(newEntry(entryToCreate));
+      const result = await dispatch(createEntry(entryToCreate));
       if (result.success) {
         alert("Entry created successfully!");
         navigate(-1); // For now just go back to the previous page

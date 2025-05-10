@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 import { LeftSideBarProps } from "../../types/dashboard/leftSideBarType";
+import LogoutButton from "../account/LogoutButton";
 
 const LeftSideBar: FC<LeftSideBarProps> = (props) => {
   const toc = props.LinkTable;
@@ -14,8 +15,7 @@ const LeftSideBar: FC<LeftSideBarProps> = (props) => {
     <div
       className={`left-sidebar-container ${
         isSideBarVisible ? "show-left-sidebar" : "hide-left-sidebar"
-      }`}
-    >
+      }`}>
       <div className="left-sidebar">
         <nav className="nav flex-column mt-3">
           {toc.map((linkGroup, index) => (
@@ -29,13 +29,13 @@ const LeftSideBar: FC<LeftSideBarProps> = (props) => {
             </div>
           ))}
         </nav>
+        <LogoutButton />
       </div>
       <button className="sidebar-toggle" onClick={toggleSideBar}>
         <i
           className={`bi ${
             isSideBarVisible ? "bi-chevron-left" : "bi-chevron-right"
-          }`}
-        ></i>
+          }`}></i>
       </button>
     </div>
   );

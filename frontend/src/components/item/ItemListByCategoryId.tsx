@@ -1,70 +1,34 @@
 import { FC, Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ItemType } from "../../types/transaction/itemType";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
-import {
-  deleteItem,
-  getAllItemsByCategoryId,
-} from "../../store/slices/Transaction/ItemSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store";
+import { deleteItem } from "../../store/slices/Transaction/ItemSlice";
 import LockModifyDelete from "../buttons/LockModifyDelete";
 import EntryListByItemId from "../entry/EntryListByItemId";
 import DroppableArea from "../droppable/DroppableArea";
 
 interface ItemListByCategoryIdProps {
   categoryId: number;
-  onCalculateBudget: (sum: number) => void;
-  onCalculateSpent: (sum: number) => void;
 }
 
 const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
   categoryId,
-  onCalculateBudget,
-  onCalculateSpent,
 }) => {
+  const items = useSelector((state: RootState) => state.item.items).filter(
+    (item) => item.categoryId === categoryId
+  );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [items, setItems] = useState<ItemType[]>([]);
-  // @ts-ignore: spentSum is intentionally not used.
-  const [spentSum, setSpentSum] = useState<Record<number, number>>({});
+
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>(
     {}
   );
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const result = await dispatch(getAllItemsByCategoryId(categoryId));
-        if (result.success) {
-          setItems(result.data);
-          setExpandedItems(
-            Object.fromEntries(result.data.map((item) => [item.id, true]))
-          );
-          const sum = result.data.reduce(
-            (total, item) => total + item.budgetAmount,
-            0
-          );
-          onCalculateBudget(sum);
-        } else {
-          for (const key in result.messages) {
-            console.log(`${key}: ${result.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-    fetchItems();
-  }, [dispatch, categoryId]);
 
   const handleDeleteItem = async (itemId: number) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         const result = await dispatch(deleteItem(itemId));
         if (result.success) {
-          setItems((prevItems) =>
-            prevItems.filter((item) => item.id !== itemId)
-          );
           alert("Item deleted successfully!");
         } else {
           alert("Failed to delete item: ");
@@ -73,18 +37,6 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
         console.error("Error deleting item:", error);
       }
     }
-  };
-
-  const updateSpentSum = (itemId: number, sum: number) => {
-    setSpentSum((prev) => {
-      const updatedSums = { ...prev, [itemId]: sum };
-      const totalSum = Object.values(updatedSums).reduce(
-        (total, itemSum) => total + itemSum,
-        0
-      );
-      onCalculateSpent(totalSum);
-      return updatedSums;
-    });
   };
 
   const toggleItem = (itemId: number) => {
@@ -131,7 +83,7 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
                         }}></i>
                     </td>
                     <td>Budget: {item.budgetAmount}</td>
-                    <td>Remaining: {item.currentAmount}</td>
+                    <td>Remaining: needs to be calculated</td>
                     <td className="text-end">
                       <LockModifyDelete
                         initialLocked={true}
@@ -148,10 +100,7 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
                 {expandedItems[item.id] && (
                   <tr>
                     <td colSpan={6}>
-                      <EntryListByItemId
-                        itemId={item.id}
-                        onCalculateSpent={(sum) => updateSpentSum(item.id, sum)}
-                      />
+                      <EntryListByItemId itemId={item.id} />
                     </td>
                   </tr>
                 )}

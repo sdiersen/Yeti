@@ -1,41 +1,24 @@
 import { FC, Fragment, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
-import { getAllCategories } from "../../store/slices/Transaction/categorySlice";
-import { CategoryType } from "../../types/transaction/categoryType";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import ItemListByCategoryId from "../item/ItemListByCategoryId";
+import { selectBudgetSums } from "../../selectors/budgetSelectors";
 
 const UserBudget: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const categories = useSelector(
+    (state: RootState) => state.category.categories
+  );
+  const budgetSums = useSelector(selectBudgetSums);
+
   const [expandedCategories, setExpandedCategories] = useState<
     Record<number, boolean>
   >({});
-  const [budgetSums, setBudgetSums] = useState<Record<number, number>>({});
-  const [spentSums, setSpentSums] = useState<Record<number, number>>({});
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await dispatch(getAllCategories());
-        if (response.success) {
-          setCategories(response.data);
-          setExpandedCategories(
-            Object.fromEntries(
-              response.data.map((category) => [category.id, true])
-            )
-          );
-        } else {
-          for (const key in response.messages) {
-            console.log(`${key}: ${response.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchCategories();
-  }, [dispatch]);
+    setExpandedCategories(
+      Object.fromEntries(categories.map((category) => [category.id, true]))
+    );
+  }, [categories]);
 
   const sortedCategories = [...categories].sort((a, b) =>
     a.name.localeCompare(b.name)
@@ -44,20 +27,6 @@ const UserBudget: FC = () => {
     setExpandedCategories((prev) => ({
       ...prev,
       [categoryId]: !prev[categoryId],
-    }));
-  };
-
-  const updateBudget = (categoryId: number, sum: number) => {
-    setBudgetSums((prev) => ({
-      ...prev,
-      [categoryId]: sum,
-    }));
-  };
-
-  const updateSpent = (categoryId: number, sum: number) => {
-    setSpentSums((prev) => ({
-      ...prev,
-      [categoryId]: sum,
     }));
   };
 
@@ -88,22 +57,16 @@ const UserBudget: FC = () => {
                   {category.name}
                 </td>
                 <td className="fw-bold">
-                  Budget: {formatCurrency(budgetSums[category.id] || 0)}
+                  Budget: {formatCurrency(budgetSums[category.id]?.budget || 0)}
                 </td>
                 <td className="fw-bold">
-                  Spent: {formatCurrency(spentSums[category.id] || 0)}
+                  Spent: {formatCurrency(budgetSums[category.id]?.spent || 0)}
                 </td>
               </tr>
               {expandedCategories[category.id] && (
                 <tr>
                   <td colSpan={3}>
-                    <ItemListByCategoryId
-                      categoryId={category.id}
-                      onCalculateBudget={(sum) =>
-                        updateBudget(category.id, sum)
-                      }
-                      onCalculateSpent={(sum) => updateSpent(category.id, sum)}
-                    />
+                    <ItemListByCategoryId categoryId={category.id} />
                   </td>
                 </tr>
               )}

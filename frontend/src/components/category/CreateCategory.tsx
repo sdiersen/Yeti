@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store";
-import { newCategory } from "../../store/slices/Transaction/categorySlice";
+import { createCategory } from "../../store/slices/Transaction/categorySlice";
 import { CategoryDTO } from "../../types/transaction/categoryType";
 
 const CreateCategory: FC = () => {
@@ -17,7 +17,7 @@ const CreateCategory: FC = () => {
     if (name && description) {
       try {
         const result = await dispatch(
-          newCategory({ name, description } as CategoryDTO)
+          createCategory({ name, description } as CategoryDTO)
         );
         if (result.success) {
           alert("Category created successfully!");

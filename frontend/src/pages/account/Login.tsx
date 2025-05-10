@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { loginAccount } from "../../store/slices/Identity/accountSlice";
 import { useNavigate } from "react-router-dom";
+import { initializeAppData } from "../../initializeAppData";
 
 const Login: FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -24,7 +25,8 @@ const Login: FC = () => {
       try {
         const result = await dispatch(loginAccount(username, password));
         if (result.success) {
-          navigate("/Dashboard"); // Redirect to home page after successful login
+          await initializeAppData(dispatch); // TODO: the way this is setup, login should determine what data to fetch (currently doesn't)
+          navigate("/UserBudget"); // Redirect to home page after successful login
           return; //stop further execution
         }
         if (result.messages) {

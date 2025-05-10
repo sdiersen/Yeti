@@ -40,6 +40,10 @@ const Dashboard: FC = () => {
           { name: "Create Entry", uri: "/CreateEntry" },
         ],
       },
+      {
+        name: "User",
+        links: [{ name: "Account Settings", uri: "/" }],
+      },
     ],
   };
 

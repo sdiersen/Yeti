@@ -1,7 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { getAllCategories } from "../../store/slices/Transaction/categorySlice";
 import { CategoryType } from "../../types/transaction/categoryType";
 import LockModifyDelete from "../../components/buttons/LockModifyDelete";
 import { deleteCategory } from "../../store/slices/Transaction/categorySlice";
@@ -30,25 +29,6 @@ const CategoryList: FC = () => {
       }
     }
   };
-
-  // Fetch categories when the component mounts
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await dispatch(getAllCategories());
-        if (response.success) {
-          setCategories(response.data);
-        } else {
-          for (const key in response.messages) {
-            console.log(`${key}: ${response.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchCategories();
-  }, [dispatch]);
 
   return (
     <>

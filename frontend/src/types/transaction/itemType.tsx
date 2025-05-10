@@ -5,7 +5,6 @@ export interface ItemType extends BaseModelType {
   note: string;
   isExpense: boolean;
   budgetAmount: number;
-  currentAmount: number;
   categoryId: number;
 }
 export const defaultItemType: ItemType = {
@@ -14,7 +13,6 @@ export const defaultItemType: ItemType = {
   note: "",
   isExpense: true,
   budgetAmount: 0,
-  currentAmount: 0,
   categoryId: -1,
 };
 
@@ -23,7 +21,6 @@ export interface ItemDTO {
   note: string;
   isExpense: boolean;
   budgetAmount: number;
-  currentAmount: number;
   categoryId: number;
 }
 
@@ -32,6 +29,5 @@ export const defaultItemDTO: ItemDTO = {
   note: "",
   isExpense: true,
   budgetAmount: 0,
-  currentAmount: 0,
   categoryId: -1,
 };

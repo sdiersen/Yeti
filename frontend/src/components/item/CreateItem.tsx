@@ -1,43 +1,25 @@
-import { FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
-import { useLocation, useNavigate } from "react-router-dom";
+import { FC, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { useNavigate } from "react-router-dom";
 import { ItemDTO } from "../../types/transaction/itemType";
-import { newItem } from "../../store/slices/Transaction/ItemSlice";
-import { getAllCategories } from "../../store/slices/Transaction/categorySlice";
-import { CategoryType } from "../../types/transaction/categoryType";
+import { createItem } from "../../store/slices/Transaction/ItemSlice";
 import CurrencyInput from "react-currency-input-field";
 
 const CreateItem: FC = () => {
+  const categories = useSelector(
+    (state: RootState) => state.category.categories
+  );
+
   const [name, setName] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [isExpense, setIsExpense] = useState<boolean>(true);
   const [budgetAmount, setBudgetAmount] = useState<string>("0.00");
   const [currentAmount, setCurrentAmount] = useState<string>("0.00");
   const [categoryId, setCategoryId] = useState<number>(-1);
-  const [categories, setCategories] = useState<CategoryType[]>([]); // Assuming you have a CategoryType defined
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await dispatch(getAllCategories());
-        if (result.success) {
-          setCategories(result.data);
-        } else {
-          for (const key in result.messages) {
-            console.log(`${key}: ${result.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchCategories();
-    setCategoryId(location.state?.categoryId ?? -1); // Get initial categoryId from location state
-  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +35,7 @@ const CreateItem: FC = () => {
 
     if (name) {
       try {
-        const result = await dispatch(newItem(itemToCreate));
+        const result = await dispatch(createItem(itemToCreate));
         if (result.success) {
           alert("Item created successfully!");
           navigate(-1); // For now just go back to the previous page

@@ -1,72 +1,35 @@
 import { FC, Fragment, useEffect, useState } from "react";
-import { ItemType } from "../../types/transaction/itemType";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
-import {
-  deleteItem,
-  getAllItems,
-} from "../../store/slices/Transaction/ItemSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { deleteItem } from "../../store/slices/Transaction/ItemSlice";
 import LockModifyDelete from "../buttons/LockModifyDelete";
 import { useNavigate } from "react-router-dom";
-import { CategoryType } from "../../types/transaction/categoryType";
-import { getAllCategories } from "../../store/slices/Transaction/categorySlice";
 import "../../assets/css/Item.css"; // Assuming you have a CSS file for styling
 
 const ItemList: FC = () => {
-  const [items, setItems] = useState<ItemType[]>([]);
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<
-    Record<number, boolean>
-  >({});
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  const items = useSelector((state: RootState) => state.item.items);
+  const categories = useSelector(
+    (state: RootState) => state.category.categories
+  );
+
+  const [expandedCategories, setExpandedCategories] = useState<
+    Record<number, boolean>
+  >({});
+
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await dispatch(getAllItems());
-        if (response.success) {
-          setItems(response.data);
-        } else {
-          for (const key in response.messages) {
-            console.log(`${key}: ${response.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-    const fetchCategories = async () => {
-      try {
-        const response = await dispatch(getAllCategories());
-        if (response.success) {
-          setCategories(response.data);
-          setExpandedCategories(
-            Object.fromEntries(
-              response.data.map((category) => [category.id, true])
-            )
-          );
-        } else {
-          for (const key in response.messages) {
-            console.log(`${key}: ${response.messages[key]}`);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchItems();
-    fetchCategories();
-  }, [dispatch]);
+    setExpandedCategories(
+      Object.fromEntries(categories.map((category) => [category.id, true]))
+    );
+  }, [categories]);
 
   const handleDeleteItem = async (itemId: number) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         const result = await dispatch(deleteItem(itemId));
         if (result.success) {
-          setItems((prevItems) =>
-            prevItems.filter((item) => item.id !== itemId)
-          );
           alert("Item deleted successfully!");
         } else {
           alert("Failed to delete item: ");
@@ -148,7 +111,6 @@ const ItemList: FC = () => {
                     <td className="text-start">Note</td>
                     <td className="text-start">Is Expense</td>
                     <td className="text-start">Budget Amount</td>
-                    <td className="text-start">Current Amount</td>
                     <td className="text-start">Actions</td>
                   </tr>
                 )}
@@ -161,7 +123,6 @@ const ItemList: FC = () => {
                       <td>{item.note}</td>
                       <td>{item.isExpense ? "Yes" : "No"}</td>
                       <td>{formatCurrency(item.budgetAmount)}</td>
-                      <td>{formatCurrency(item.currentAmount)}</td>
                       <td>
                         <LockModifyDelete
                           initialLocked={true}
