@@ -1,4 +1,4 @@
-import { EntryType } from "../transaction/entryType";
+import { EntryType } from "../types/transaction/entryType";
 import { DRAG_AND_DROP_TYPE } from "./dndConstants";
 
 export interface DraggableEntryType extends EntryType {
@@ -7,4 +7,5 @@ export interface DraggableEntryType extends EntryType {
 
 export interface DraggableEntry {
   entry: EntryType;
+  type: typeof DRAG_AND_DROP_TYPE;
 }

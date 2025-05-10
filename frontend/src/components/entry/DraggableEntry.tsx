@@ -3,12 +3,13 @@ import { EntryType } from "../../types/transaction/entryType";
 import { useDraggable } from "@dnd-kit/core";
 import LockModifyDelete from "../buttons/LockModifyDelete";
 import "../../assets/css/shared/Colors.css";
+import { DRAG_AND_DROP_TYPE } from "../../dnd/dndConstants";
 
 const DraggableEntry: FC<{ entry: EntryType }> = ({ entry }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `entry-${entry.id}`,
-      data: { entry },
+      data: { entry, type: DRAG_AND_DROP_TYPE.ENTRY },
     });
 
   const style = {
