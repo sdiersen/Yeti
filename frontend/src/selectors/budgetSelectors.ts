@@ -50,3 +50,17 @@ export const selectBudgetSums = createSelector(
     return categorySums;
   }
 );
+
+export const selectItemEntrySums = createSelector(
+  selectAllEntries,
+  (entries) => {
+    const sums: Record<number, number> = {};
+    entries.forEach((entry) => {
+      if (!sums[entry.itemId]) {
+        sums[entry.itemId] = 0;
+      }
+      sums[entry.itemId] += entry.amount;
+    });
+    return sums;
+  }
+);

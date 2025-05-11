@@ -6,6 +6,7 @@ import { deleteItem } from "../../store/slices/Transaction/ItemSlice";
 import LockModifyDelete from "../buttons/LockModifyDelete";
 import EntryListByItemId from "../entry/EntryListByItemId";
 import DroppableArea from "../droppable/DroppableArea";
+import { selectItemEntrySums } from "../../selectors/budgetSelectors";
 
 interface ItemListByCategoryIdProps {
   categoryId: number;
@@ -17,6 +18,8 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
   const items = useSelector((state: RootState) => state.item.items).filter(
     (item) => item.categoryId === categoryId
   );
+  const entrySums = useSelector(selectItemEntrySums);
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -51,61 +54,66 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
       <table className="mt-0 pt-0" style={{ width: "100%" }}>
         <tbody>
           {items &&
-            items.map((item) => (
-              <Fragment key={`${categoryId}${item.id}`}>
-                <DroppableArea
-                  key={item.id}
-                  id={`item-${item.id}`}
-                  categoryId={categoryId}
-                  itemId={item.id}>
-                  <tr
-                    style={{
-                      backgroundColor: item.isExpense ? "#f8d7da" : "#d4edda", // Light red for expense, light green otherwise
-                    }}
-                    title={item.note}>
-                    <td>
-                      <i
-                        className={`bi ${
-                          expandedItems[item.id]
-                            ? "bi-chevron-up"
-                            : "bi-chevron-down"
-                        } me-2`}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => toggleItem(item.id)}></i>
-                      {item.name}
-                      <i
-                        className="bi bi-plus-circle ms-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          navigate("/createentry", {
-                            state: { itemId: item.id },
-                          });
-                        }}></i>
-                    </td>
-                    <td>Budget: {item.budgetAmount}</td>
-                    <td>Remaining: needs to be calculated</td>
-                    <td className="text-end">
-                      <LockModifyDelete
-                        initialLocked={true}
-                        onModify={() => {
-                          navigate("/ModifyItem", { state: { item } });
-                        }}
-                        onDelete={() => {
-                          () => handleDeleteItem(item.id);
-                        }}
-                      />
-                    </td>
-                  </tr>
-                </DroppableArea>
-                {expandedItems[item.id] && (
-                  <tr>
-                    <td colSpan={6}>
-                      <EntryListByItemId itemId={item.id} />
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            ))}
+            items.map((item) => {
+              const totalSpent = entrySums[item.id] || 0; // Get the total spent for this item
+              const remaining = item.budgetAmount - totalSpent; // Calculate the remaining budget
+
+              return (
+                <Fragment key={`${categoryId}${item.id}`}>
+                  <DroppableArea
+                    key={item.id}
+                    id={`item-${item.id}`}
+                    categoryId={categoryId}
+                    itemId={item.id}>
+                    <tr
+                      style={{
+                        backgroundColor: item.isExpense ? "#f8d7da" : "#d4edda", // Light red for expense, light green otherwise
+                      }}
+                      title={item.note}>
+                      <td>
+                        <i
+                          className={`bi ${
+                            expandedItems[item.id]
+                              ? "bi-chevron-up"
+                              : "bi-chevron-down"
+                          } me-2`}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => toggleItem(item.id)}></i>
+                        {item.name}
+                        <i
+                          className="bi bi-plus-circle ms-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            navigate("/createentry", {
+                              state: { itemId: item.id },
+                            });
+                          }}></i>
+                      </td>
+                      <td>Budget: {item.budgetAmount}</td>
+                      <td>Remaining: {remaining}</td>
+                      <td className="text-end">
+                        <LockModifyDelete
+                          initialLocked={true}
+                          onModify={() => {
+                            navigate("/ModifyItem", { state: { item } });
+                          }}
+                          onDelete={() => {
+                            () => handleDeleteItem(item.id);
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  </DroppableArea>
+                  {expandedItems[item.id] && (
+                    <tr>
+                      <td colSpan={6}>
+                        <EntryListByItemId itemId={item.id} />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
         </tbody>
       </table>
     </>
