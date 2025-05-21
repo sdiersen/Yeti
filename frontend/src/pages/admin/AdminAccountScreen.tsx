@@ -3,10 +3,8 @@ import { AccountWithRolesDTO } from "../../types/Identity/accountType";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 import { ApiResponseDataType } from "../../types/api/apiResponseType";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import LockModifyDelete from "../../components/buttons/LockModifyDelete";
-import LogoutButton from "../../components/account/LogoutButton";
+import LockModifyDelete from "../../replaceable/buttons/LockModifyDelete";
+import LogoutButton from "../../replaceable/account/LogoutButton";
 
 const AdminAccountScreen: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,14 +54,12 @@ const AdminAccountScreen: FC = () => {
       <div className="d-flex">
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/CreateUserAccount")}
-        >
+          onClick={() => navigate("/CreateUserAccount")}>
           Create New Account
         </button>
         <button
           className="btn btn-secondary ms-4"
-          onClick={() => navigate("/AdminDashboard")}
-        >
+          onClick={() => navigate("/AdminDashboard")}>
           Back to Admin Screen
         </button>
         <LogoutButton classname="btn-danger ms-4" />
