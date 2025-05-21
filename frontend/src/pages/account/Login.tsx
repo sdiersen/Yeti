@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
-import { loginAccount } from "../../store/slices/Identity/accountSlice";
+import { loginAccount, logout } from "../../store/slices/Identity/accountSlice";
 import { useNavigate } from "react-router-dom";
 import { initializeAppData } from "../../initializeAppData";
 
@@ -15,7 +15,11 @@ const Login: FC = () => {
 
   useEffect(() => {
     if (data.account.id > 0) {
-      navigate("/Dashboard"); // Redirect to home page if already logged in
+      const logoutUser = async () => {
+        try {
+          await dispatch(logout());
+        }
+      }
     }
   }, [data.account, navigate]);
 

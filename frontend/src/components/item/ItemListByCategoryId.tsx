@@ -1,12 +1,10 @@
 import { FC, Fragment, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
 import { deleteItem } from "../../store/slices/Transaction/ItemSlice";
-import LockModifyDelete from "../buttons/LockModifyDelete";
 import EntryListByItemId from "../entry/EntryListByItemId";
-import DroppableArea from "../droppable/DroppableArea";
 import { selectItemEntrySums } from "../../selectors/budgetSelectors";
+import DroppableItemRow from "./DroppableItemRow";
 
 interface ItemListByCategoryIdProps {
   categoryId: number;
@@ -21,7 +19,6 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
   const entrySums = useSelector(selectItemEntrySums);
 
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
 
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>(
     {}
@@ -60,50 +57,14 @@ const ItemListByCategoryId: FC<ItemListByCategoryIdProps> = ({
 
               return (
                 <Fragment key={`${categoryId}${item.id}`}>
-                  <DroppableArea
-                    key={item.id}
+                  <DroppableItemRow
                     id={`item-${item.id}`}
-                    categoryId={categoryId}
-                    itemId={item.id}>
-                    <tr
-                      style={{
-                        backgroundColor: item.isExpense ? "#f8d7da" : "#d4edda", // Light red for expense, light green otherwise
-                      }}
-                      title={item.note}>
-                      <td>
-                        <i
-                          className={`bi ${
-                            expandedItems[item.id]
-                              ? "bi-chevron-up"
-                              : "bi-chevron-down"
-                          } me-2`}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => toggleItem(item.id)}></i>
-                        {item.name}
-                        <i
-                          className="bi bi-plus-circle ms-2"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            navigate("/createentry", {
-                              state: { itemId: item.id },
-                            });
-                          }}></i>
-                      </td>
-                      <td>Budget: {item.budgetAmount}</td>
-                      <td>Remaining: {remaining}</td>
-                      <td className="text-end">
-                        <LockModifyDelete
-                          initialLocked={true}
-                          onModify={() => {
-                            navigate("/ModifyItem", { state: { item } });
-                          }}
-                          onDelete={() => {
-                            () => handleDeleteItem(item.id);
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  </DroppableArea>
+                    item={item}
+                    remaining={remaining}
+                    isExpanded={expandedItems[item.id]}
+                    toggleItem={toggleItem}
+                    handleDeleteItem={handleDeleteItem}
+                  />
                   {expandedItems[item.id] && (
                     <tr>
                       <td colSpan={6}>

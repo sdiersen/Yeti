@@ -1,6 +1,20 @@
+:root {
+  --bg-expense-color: #f8d7da; /* Light Red */
+  --bg-income-color: #d4edda; /* Light Green */
+}
+
 .text-expense {
   color: #721c24; /* Red */
 }
+
 .text-income {
   color: #155724; /* Green */
+}
+
+.background-expense {
+  background-color: var(--bg-expense-color);
+}
+
+.background-income {
+  background-color: var(--bg-income-color);
 }
