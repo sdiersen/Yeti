@@ -15,11 +15,13 @@ const Login: FC = () => {
 
   useEffect(() => {
     if (data.account.id > 0) {
-      const logoutUser = async () => {
+      (async () => {
         try {
-          await dispatch(logout());
+          dispatch(logout());
+        } catch (error) {
+          console.error("Error logging out:", error);
         }
-      }
+      })();
     }
   }, [data.account, navigate]);
 
