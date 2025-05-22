@@ -1,5 +1,5 @@
 import { FC } from "react";
-import LogoutButton from "../../components/account/LogoutButton";
+import LogoutButton from "../../replaceable/account/LogoutButton";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard: FC = () => {
@@ -12,8 +12,7 @@ const AdminDashboard: FC = () => {
       </div>
       <button
         className="btn btn-success me-2"
-        onClick={() => navigate("/AdminAccountScreen")}
-      >
+        onClick={() => navigate("/AdminAccountScreen")}>
         Show Accounts
       </button>
       <LogoutButton classname="btn-primary" />

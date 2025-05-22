@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Route, Routes } from "react-router-dom";
-import Login from "./pages/account/Login";
 import NewAccount from "./pages/account/NewAccount";
 import Unauthorized from "./Unauthorized";
 import ProtectedRoute from "./ProtectedRoute";
@@ -10,21 +9,22 @@ import ModifyAccount from "./pages/account/ModifyAccount";
 import CreateUserAccount from "./pages/admin/CreateUserAccount";
 import Dashboard from "./pages/Dashboard";
 import Unknown from "./pages/Unknown";
-import CreateCategory from "./components/category/CreateCategory";
-import CategoryList from "./components/category/CategoryList";
-import ModifyCategory from "./components/category/ModifyCategory";
-import CreateItem from "./components/item/CreateItem";
-import ItemList from "./components/item/ItemList";
-import ModifyItem from "./components/item/ModifyItem";
-import CreateEntry from "./components/entry/CreateEntry";
-import EntryList from "./components/entry/EntryList";
-import UserBudget from "./components/BudgetViews/UserBudget";
+import CreateCategory from "./replaceable/category/CreateCategory";
+import CategoryList from "./replaceable/category/CategoryList";
+import ModifyCategory from "./replaceable/category/ModifyCategory";
+import CreateItem from "./replaceable/item/CreateItem";
+import ItemList from "./replaceable/item/ItemList";
+import ModifyItem from "./replaceable/item/ModifyItem";
+import CreateEntry from "./replaceable/entry/CreateEntry";
+import EntryList from "./replaceable/entry/EntryList";
+import UserBudget from "./replaceable/BudgetViews/UserBudget";
+import { LoginProvider } from "./pages/login/components/LoginProvder";
 
 const AppRoutes: FC = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/Login" element={<Login />} />
+      <Route path="/Login" element={<LoginProvider />} />
       <Route path="/Unauthorized" element={<Unauthorized />} />
       <Route path="/NewAccount" element={<NewAccount />} />
 

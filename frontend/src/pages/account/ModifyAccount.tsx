@@ -8,7 +8,7 @@ import {
   UpdateAccountDTO,
 } from "../../types/Identity/accountType";
 import { updateAccount } from "../../store/slices/Identity/accountSlice";
-import EditAccountRoles from "../../components/account/EditAccountRoles";
+import EditAccountRoles from "../../replaceable/account/EditAccountRoles";
 
 const ModifyAccount: FC = () => {
   const dispatch = useDispatch<AppDispatch>();

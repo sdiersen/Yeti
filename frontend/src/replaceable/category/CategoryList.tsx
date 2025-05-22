@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
 import { CategoryType } from "../../types/transaction/categoryType";
-import LockModifyDelete from "../../components/buttons/LockModifyDelete";
 import { deleteCategory } from "../../store/slices/Transaction/categorySlice";
 import { useNavigate } from "react-router-dom";
 
@@ -47,13 +46,13 @@ const CategoryList: FC = () => {
               <td>{category.name}</td>
               <td>{category.description}</td>
               <td>
-                <LockModifyDelete
+                {/* <LockModifyDelete
                   initialLocked={true}
                   onModify={() => {
                     navigate("/ModifyCategory", { state: { category } });
                   }}
                   onDelete={() => handleDeleteCategory(category.id)}
-                />
+                /> */}
               </td>
             </tr>
           ))}

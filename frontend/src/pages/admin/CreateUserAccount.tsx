@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { adminCreateAccount } from "../../store/slices/Identity/accountSlice";
 import { UpdateAccountDTO } from "../../types/Identity/accountType";
-import EditAccountRoles from "../../components/account/EditAccountRoles";
+import EditAccountRoles from "../../replaceable/account/EditAccountRoles";
 
 const CreateUserAccount: FC = () => {
   const dispatch = useDispatch<AppDispatch>();

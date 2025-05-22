@@ -4,7 +4,6 @@ import { RootState, AppDispatch } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { defaultItemType, ItemType } from "../../types/transaction/itemType";
 import { updateItem } from "../../store/slices/Transaction/ItemSlice";
-import CurrencyInput from "react-currency-input-field";
 
 const ModifyItem: FC = () => {
   const categories = useSelector(
@@ -110,7 +109,7 @@ const ModifyItem: FC = () => {
             <label htmlFor="budgetAmount" className="form-label">
               Budget Amount
             </label>
-            <CurrencyInput
+            {/* <CurrencyInput
               id="budgetAmount"
               name="budgetAmount"
               className="form-control"
@@ -119,7 +118,7 @@ const ModifyItem: FC = () => {
               decimalsLimit={2}
               prefix="$"
               onValueChange={(value) => setBudgetAmount(value || "0.00")}
-            />
+            /> */}
           </div>
           <div className="mb-3">
             <label htmlFor="categoryId" className="form-label">

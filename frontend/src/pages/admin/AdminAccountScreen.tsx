@@ -3,7 +3,6 @@ import { AccountWithRolesDTO } from "../../types/Identity/accountType";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 import { ApiResponseDataType } from "../../types/api/apiResponseType";
-import LockModifyDelete from "../../replaceable/buttons/LockModifyDelete";
 import LogoutButton from "../../replaceable/account/LogoutButton";
 
 const AdminAccountScreen: FC = () => {
@@ -94,7 +93,7 @@ const AdminAccountScreen: FC = () => {
                 {accountWithRoles.roles.map((role) => role.roleName).join(", ")}
               </td>
               <td className="text-start">
-                <LockModifyDelete
+                {/* <LockModifyDelete
                   initialLocked={true}
                   onModify={() => {
                     navigate("/ModifyAccount", {
@@ -110,7 +109,7 @@ const AdminAccountScreen: FC = () => {
                       deleteAccount(accountWithRoles.account.id);
                     }
                   }}
-                />
+                /> */}
               </td>
             </tr>
           ))}

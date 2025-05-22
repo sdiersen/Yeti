@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { ItemType } from "../../types/transaction/itemType";
 import { FC } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import LockModifyDelete from "../buttons/LockModifyDelete";
 
 interface DroppableItemRowProps {
   id: string;

@@ -2,7 +2,6 @@ import { FC, Fragment } from "react";
 import { ItemType } from "../../types/transaction/itemType";
 import { useNavigate } from "react-router-dom";
 import DroppableArea from "../droppable/DroppableArea";
-import LockModifyDelete from "../buttons/LockModifyDelete";
 import EntryListByItemId from "../entry/EntryListByItemId";
 
 interface ItemRowProps {
@@ -55,7 +54,7 @@ const ItemRow: FC<ItemRowProps> = ({
           <td>Budget: {item.budgetAmount}</td>
           <td>Remaining: {remaining}</td>
           <td className="text-end">
-            <LockModifyDelete
+            {/* <LockModifyDelete
               initialLocked={true}
               onModify={() => {
                 navigate("/ModifyItem", { state: { item } });
@@ -63,7 +62,7 @@ const ItemRow: FC<ItemRowProps> = ({
               onDelete={() => {
                 () => handleDeleteItem(item.id);
               }}
-            />
+            /> */}
           </td>
         </tr>
       </DroppableArea>

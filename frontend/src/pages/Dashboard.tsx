@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { Outlet } from "react-router-dom";
-import RightSideBar from "../components/dashboard/RightSideBar";
-import TopTitleBar from "../components/dashboard/TopTitleBar";
-import LeftSideBar from "../components/dashboard/LeftSideBar";
+import RightSideBar from "../replaceable/dashboard/RightSideBar";
+import TopTitleBar from "../replaceable/dashboard/TopTitleBar";
+import LeftSideBar from "../replaceable/dashboard/LeftSideBar";
 import "../assets/css/dashboard.css";
 
 const Dashboard: FC = () => {

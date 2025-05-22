@@ -17,7 +17,7 @@ const LockModifyDelete: FC<LockModifyDeleteProps> = ({
   };
   return (
     <>
-      <button
+      {/* <button
         className="btn btn-warning btn-sm me-2"
         title={isLocked ? "Unlock Account" : "Lock Account"}
         onClick={toggleLock}>
@@ -36,7 +36,7 @@ const LockModifyDelete: FC<LockModifyDeleteProps> = ({
         onClick={onDelete}
         disabled={isLocked}>
         Delete
-      </button>
+      </button> */}
     </>
   );
 };

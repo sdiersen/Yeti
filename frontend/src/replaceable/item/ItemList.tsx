@@ -2,7 +2,6 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { deleteItem } from "../../store/slices/Transaction/ItemSlice";
-import LockModifyDelete from "../buttons/LockModifyDelete";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/Item.css"; // Assuming you have a CSS file for styling
 
@@ -124,13 +123,13 @@ const ItemList: FC = () => {
                       <td>{item.isExpense ? "Yes" : "No"}</td>
                       <td>{formatCurrency(item.budgetAmount)}</td>
                       <td>
-                        <LockModifyDelete
+                        {/* <LockModifyDelete
                           initialLocked={true}
                           onModify={() => {
                             navigate("/ModifyItem", { state: { item } });
                           }}
                           onDelete={() => handleDeleteItem(item.id)}
-                        />
+                        /> */}
                       </td>
                     </tr>
                   ))}
